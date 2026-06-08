@@ -3,179 +3,192 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interview Scheduler</title>
+<title>SPPG Interview Scheduler</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink: #0F1117;
-  --ink2: #4A4D58;
-  --ink3: #9699A6;
-  --paper: #FAF9F7;
-  --white: #FFFFFF;
-  --border: rgba(15,17,23,0.1);
-  --border2: rgba(15,17,23,0.18);
-  --green: #1B6B45;
-  --green-bg: #EBF5F0;
-  --green-border: #B8DEC9;
-  --amber: #B45309;
-  --amber-bg: #FEF3E2;
-  --red: #C0392B;
-  --red-bg: #FEF2F2;
-  --r: 14px;
-  --rs: 8px;
+:root{
+  --teal:#1BA8A0;--red:#E63329;--blue:#1E88D4;--amber:#F5A623;
+  --green:#1B6B45;--ink:#0F1117;--ink2:#4A4D58;--ink3:#9699A6;
+  --paper:#FAF9F7;--white:#fff;
+  --border:rgba(15,17,23,.10);--border2:rgba(15,17,23,.18);
+  --gbg:#EBF5F0;--gborder:#B8DEC9;--rbg:#FEF2F2;
+  --r:14px;--rs:8px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+.page{display:none;min-height:100vh;flex-direction:column;}
+.page.active{display:flex;}
 
-/* PAGES */
-.page { display: none; min-height: 100vh; }
-.page.active { display: flex; flex-direction: column; }
+/* LANDING */
+#pg-landing{background:var(--ink);color:#fff;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden;}
+#pg-landing::before{content:'';position:absolute;top:-120px;right:-80px;width:400px;height:400px;border-radius:50%;background:var(--teal);opacity:.08;}
+#pg-landing::after{content:'';position:absolute;bottom:-100px;left:-60px;width:300px;height:300px;border-radius:50%;background:var(--blue);opacity:.07;}
+.land-wrap{text-align:center;max-width:480px;width:100%;position:relative;z-index:1;}
+.sppg-logo-mark{width:72px;height:72px;margin:0 auto 20px;background:linear-gradient(135deg,var(--teal),var(--blue));border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;letter-spacing:.05em;color:#fff;box-shadow:0 8px 32px rgba(27,168,160,.3);}
+.sppg-name{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:24px;}
+.land-title{font-family:'Playfair Display',serif;font-size:clamp(28px,6vw,46px);line-height:1.15;margin-bottom:14px;}
+.land-title em{font-style:italic;color:var(--teal);}
+.land-sub{font-size:15px;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:36px;max-width:380px;margin-left:auto;margin-right:auto;}
+.land-btns{display:flex;flex-direction:column;gap:12px;}
+.btn-teal{height:52px;border-radius:var(--rs);background:var(--teal);color:#fff;border:none;font:600 15px 'DM Sans',sans-serif;cursor:pointer;transition:all .18s;letter-spacing:.01em;}
+.btn-teal:hover{background:#17908A;}
+.btn-outline-white{height:52px;border-radius:var(--rs);background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);font:500 14px 'DM Sans',sans-serif;cursor:pointer;transition:all .18s;}
+.btn-outline-white:hover{border-color:rgba(255,255,255,.5);color:#fff;}
+.land-accent-bar{display:flex;justify-content:center;gap:6px;margin-bottom:32px;}
+.accent-dot{width:8px;height:8px;border-radius:50%;}
 
-/* ── LANDING ── */
-#pg-landing { align-items: center; justify-content: center; padding: 40px 24px; }
-.land-wrap { text-align: center; max-width: 440px; width: 100%; }
-.land-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); margin-bottom: 20px; }
-.land-title { font-family: 'Playfair Display', serif; font-size: clamp(32px,7vw,52px); line-height: 1.1; margin-bottom: 16px; }
-.land-title em { font-style: italic; color: var(--green); }
-.land-sub { font-size: 15px; color: var(--ink2); line-height: 1.65; margin-bottom: 36px; }
-.land-btns { display: flex; flex-direction: column; gap: 12px; }
-.btn-fill { height: 50px; border-radius: var(--rs); background: var(--green); color: #fff; border: none; font: 600 15px 'DM Sans',sans-serif; cursor: pointer; transition: opacity .18s; }
-.btn-fill:hover { opacity: .88; }
-.btn-stroke { height: 50px; border-radius: var(--rs); background: transparent; color: var(--ink2); border: 1px solid var(--border2); font: 500 14px 'DM Sans',sans-serif; cursor: pointer; transition: all .18s; }
-.btn-stroke:hover { border-color: var(--green); color: var(--green); }
+/* EMAIL GATE */
+#pg-email{align-items:center;justify-content:center;padding:40px 20px;background:var(--paper);}
+.gate-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:40px 32px;width:100%;max-width:420px;box-shadow:0 4px 32px rgba(0,0,0,.06);}
+.gate-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+.gate-logo-mark{width:38px;height:38px;background:linear-gradient(135deg,var(--teal),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;}
+.gate-logo-name{font-size:12px;font-weight:600;color:var(--ink2);line-height:1.3;}
+.gate-card h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:6px;}
+.gate-card p{font-size:13px;color:var(--ink2);margin-bottom:22px;line-height:1.6;}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:6px;}
+.inp{width:100%;height:44px;border:1px solid var(--border2);border-radius:var(--rs);padding:0 14px;font:14px 'DM Sans',sans-serif;color:var(--ink);background:var(--paper);outline:none;transition:border-color .18s;}
+.inp:focus{border-color:var(--teal);}
+.err{font-size:12px;color:var(--red);margin-top:8px;display:none;line-height:1.5;}
+.support-note{font-size:11px;color:var(--ink3);margin-top:12px;text-align:center;line-height:1.5;}
+.support-note a{color:var(--teal);text-decoration:none;}
+.btn{height:44px;border-radius:var(--rs);border:none;font:600 14px 'DM Sans',sans-serif;cursor:pointer;transition:all .18s;}
+.btn-g{background:var(--teal);color:#fff;width:100%;margin-top:14px;}
+.btn-g:hover{background:#17908A;}
+.btn-g:disabled{opacity:.5;cursor:not-allowed;}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── EMAIL GATE ── */
-#pg-email { align-items: center; justify-content: center; padding: 40px 20px; }
-.gate-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 36px 32px; width: 100%; max-width: 420px; box-shadow: 0 4px 24px rgba(0,0,0,.05); }
-.gate-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink3); cursor: pointer; margin-bottom: 24px; border: none; background: none; font-family: 'DM Sans',sans-serif; }
-.gate-back:hover { color: var(--ink); }
-.gate-card h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 6px; }
-.gate-card p { font-size: 13px; color: var(--ink2); margin-bottom: 22px; line-height: 1.6; }
-.field-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); display: block; margin-bottom: 6px; }
-.field-input { width: 100%; height: 44px; border: 1px solid var(--border2); border-radius: var(--rs); padding: 0 14px; font: 14px 'DM Sans',sans-serif; color: var(--ink); background: var(--paper); outline: none; transition: border-color .18s; }
-.field-input:focus { border-color: var(--green); }
-.err { font-size: 12px; color: var(--red); margin-top: 8px; display: none; }
-.spin { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── BOOKING PAGE ── */
-#pg-booking { flex-direction: column; }
-.booking-hero { background: var(--green); color: #fff; padding: 36px 24px 52px; text-align: center; }
-.booking-hero .ey { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; opacity: .65; margin-bottom: 12px; }
-.booking-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(26px,5vw,38px); }
-.student-pill { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,.12); border-radius: 40px; padding: 8px 16px 8px 10px; margin-top: 14px; }
-.s-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
-.s-name { font-size: 14px; font-weight: 500; }
-.booking-body { max-width: 520px; margin: -24px auto 60px; padding: 0 20px; }
+/* BOOKING */
+#pg-booking{flex-direction:column;}
+.bk-hero{background:linear-gradient(135deg,var(--ink) 0%,#1a2a3a 100%);color:#fff;padding:28px 24px 48px;position:relative;overflow:hidden;}
+.bk-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:var(--teal);opacity:.1;}
+.bk-hero-top{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.bk-logo-sm{width:32px;height:32px;background:linear-gradient(135deg,var(--teal),var(--blue));border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;color:#fff;}
+.bk-school{font-size:12px;opacity:.6;}
+.bk-hero h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,32px);}
+.s-pill{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);border-radius:40px;padding:8px 16px 8px 8px;margin-top:12px;}
+.s-av{width:30px;height:30px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.s-nm{font-size:13px;font-weight:500;}
+.bk-body{max-width:520px;margin:-24px auto 60px;padding:0 20px;}
 
 /* Calendar */
-.cal-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,.06); }
-.cal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); }
-.cal-month { font-family: 'Playfair Display', serif; font-size: 18px; }
-.cal-nav-btn { width: 32px; height: 32px; border: 1px solid var(--border2); border-radius: var(--rs); background: none; cursor: pointer; font-size: 15px; color: var(--ink2); display: flex; align-items: center; justify-content: center; transition: all .15s; }
-.cal-nav-btn:hover { background: var(--paper); color: var(--ink); }
-.cal-wds { display: grid; grid-template-columns: repeat(7,1fr); }
-.cal-wd { text-align: center; padding: 10px 0; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
-.cal-days { display: grid; grid-template-columns: repeat(7,1fr); }
-.cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 13px; color: var(--ink3); position: relative; cursor: default; transition: all .12s; }
-.cal-day.has-slots { color: var(--ink); cursor: pointer; }
-.cal-day.has-slots:hover { background: var(--green-bg); }
-.cal-day.has-slots.sel { background: var(--green); color: #fff; }
-.cal-day.full { background: rgba(0,0,0,.02); }
-.cal-day.today .dn { font-weight: 700; }
-.dn { font-size: 14px; line-height: 1; }
-.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
-.cal-day.sel .dot { background: rgba(255,255,255,.6); }
-.cal-day.full .dot { background: var(--border2); }
+.cal-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.07);}
+.cal-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);}
+.cal-month{font-family:'Playfair Display',serif;font-size:18px;}
+.cal-nb{width:32px;height:32px;border:1px solid var(--border2);border-radius:var(--rs);background:none;cursor:pointer;font-size:16px;color:var(--ink2);display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.cal-nb:hover{background:var(--paper);color:var(--ink);}
+.cal-wds{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-wd{text-align:center;padding:10px 0;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);}
+.cday{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:13px;color:var(--ink3);cursor:default;transition:all .12s;}
+.cday.avail{color:var(--ink);cursor:pointer;}
+.cday.avail:hover{background:var(--gbg);}
+.cday.avail.sel{background:var(--teal);color:#fff;}
+.cday.full{background:rgba(0,0,0,.02);}
+.dn{font-size:14px;line-height:1;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--teal);}
+.cday.sel .dot{background:rgba(255,255,255,.6);}
+.cday.full .dot{background:var(--border2);}
 
-/* Time slots */
-.time-panel { margin-top: 16px; display: none; }
-.time-panel.show { display: block; }
-.sec-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
-.shift-group { margin-bottom: 16px; }
-.shift-title { font-size: 12px; font-weight: 600; color: var(--ink2); margin-bottom: 8px; padding: 4px 10px; background: var(--paper); border-radius: 6px; display: inline-block; }
-.slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.slot-chip { border: 1px solid var(--border2); border-radius: var(--rs); padding: 10px 6px; text-align: center; cursor: pointer; transition: all .15s; background: var(--white); }
-.slot-chip:hover { border-color: var(--green); background: var(--green-bg); }
-.slot-chip.sel { background: var(--green); border-color: var(--green); color: #fff; }
-.slot-chip.booked { background: var(--paper); color: var(--ink3); cursor: not-allowed; border-style: dashed; text-decoration: line-through; }
-.slot-time { font-size: 13px; font-weight: 600; display: block; }
-.slot-sub { font-size: 10px; opacity: .65; display: block; margin-top: 2px; }
+/* Time */
+.time-panel{margin-top:16px;display:none;}
+.time-panel.show{display:block;}
+.sec-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px;}
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.slot-chip{border:1px solid var(--border2);border-radius:var(--rs);padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s;background:var(--white);}
+.slot-chip:hover{border-color:var(--teal);background:var(--gbg);}
+.slot-chip.sel{background:var(--teal);border-color:var(--teal);color:#fff;}
+.slot-chip.bkd{background:var(--paper);color:var(--ink3);cursor:not-allowed;border-style:dashed;text-decoration:line-through;}
+.st{font-size:13px;font-weight:600;display:block;}
+.ss{font-size:10px;opacity:.65;display:block;margin-top:2px;}
 
-/* Confirm bar */
-.confirm-box { margin-top: 20px; display: none; }
-.confirm-box.show { display: block; }
-.confirm-preview { background: var(--green-bg); border: 1px solid var(--green-border); border-radius: var(--rs); padding: 14px 16px; font-size: 13px; color: var(--green); line-height: 1.7; margin-bottom: 12px; }
-.btn-confirm { width: 100%; height: 50px; background: var(--green); color: #fff; border: none; border-radius: var(--rs); font: 600 15px 'DM Sans',sans-serif; cursor: pointer; transition: opacity .18s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.btn-confirm:hover { opacity: .88; }
-.btn-confirm:disabled { opacity: .5; cursor: not-allowed; }
+/* Confirm */
+.confirm-box{margin-top:20px;display:none;}
+.confirm-box.show{display:block;}
+.cprev{background:var(--gbg);border:1px solid var(--gborder);border-radius:var(--rs);padding:14px 16px;font-size:13px;color:var(--green);line-height:1.7;margin-bottom:12px;}
+.btn-confirm{width:100%;height:50px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font:600 15px 'DM Sans',sans-serif;cursor:pointer;transition:opacity .18s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-confirm:hover{opacity:.88;}
+.btn-confirm:disabled{opacity:.5;cursor:not-allowed;}
 
-/* ── SUCCESS ── */
-#pg-success { align-items: center; justify-content: center; padding: 40px 24px; text-align: center; }
-.success-wrap { max-width: 380px; }
-.success-icon { width: 72px; height: 72px; border-radius: 50%; background: var(--green-bg); border: 2px solid var(--green-border); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 24px; }
-.success-wrap h2 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--green); margin-bottom: 10px; }
-.success-wrap p { font-size: 14px; color: var(--ink2); line-height: 1.7; }
-.success-detail { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; text-align: left; margin-top: 24px; }
-.sd-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-.sd-row:last-child { border: none; }
-.sd-label { color: var(--ink2); }
-.sd-val { font-weight: 600; }
+/* Success */
+#pg-success{align-items:center;justify-content:center;padding:40px 24px;text-align:center;}
+.suc-wrap{max-width:400px;}
+.suc-icon{width:72px;height:72px;border-radius:50%;background:var(--gbg);border:2px solid var(--gborder);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 24px;}
+.suc-wrap h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--teal);margin-bottom:10px;}
+.suc-wrap p{font-size:14px;color:var(--ink2);line-height:1.7;}
+.suc-detail{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:left;margin-top:24px;}
+.sdr{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.sdr:last-child{border:none;}
+.sdl{color:var(--ink2);}
+.sdv{font-weight:600;}
+.sppg-footer{margin-top:20px;font-size:11px;color:var(--ink3);}
 
 /* Toast */
-.toast { position: fixed; bottom: 24px; right: 24px; background: var(--ink); color: #fff; padding: 12px 18px; border-radius: var(--rs); font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 300px; line-height: 1.5; }
-.toast.show { opacity: 1; }
-.toast.ok { background: var(--green); }
-.toast.bad { background: var(--red); }
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:300px;line-height:1.5;}
+.toast.show{opacity:1;}
+.toast.ok{background:var(--teal);}
+.toast.bad{background:var(--red);}
 </style>
 </head>
 <body>
 
-<!-- LANDING -->
 <div id="pg-landing" class="page active">
   <div class="land-wrap">
-    <div class="land-eyebrow">Admissions · Interview Portal</div>
-    <h1 class="land-title">Schedule Your<br><em>Interview</em></h1>
-    <p class="land-sub">Secure your spot for the admissions interview. Slots are limited and assigned first-come, first-served.</p>
+    <div class="land-accent-bar">
+      <div class="accent-dot" style="background:var(--red)"></div>
+      <div class="accent-dot" style="background:var(--teal)"></div>
+      <div class="accent-dot" style="background:var(--blue)"></div>
+      <div class="accent-dot" style="background:var(--amber)"></div>
+    </div>
+    <div class="sppg-logo-mark">SPPG</div>
+    <div class="sppg-name">School of Politics, Policy & Governance</div>
+    <h1 class="land-title">Schedule Your<br><em>Admissions Interview</em></h1>
+    <p class="land-sub">Book your video interview slot for SPPG admissions. Limited slots available — book early.</p>
     <div class="land-btns">
-      <button class="btn-fill" onclick="go('pg-email')">Book My Interview Slot →</button>
-      <button class="btn-stroke" onclick="window.location='/admin.html'">Admin / Panel Access</button>
+      <button class="btn-teal" onclick="go('pg-email')">Book My Interview Slot →</button>
+      <button class="btn-outline-white" onclick="window.location='/admin.html'">Admin / Panel Portal</button>
     </div>
   </div>
 </div>
 
-<!-- EMAIL GATE -->
 <div id="pg-email" class="page">
-  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;background:var(--paper);">
     <div class="gate-card">
-      <button class="gate-back" onclick="go('pg-landing')">← Back</button>
+      <div class="gate-logo">
+        <div class="gate-logo-mark">SPPG</div>
+        <div class="gate-logo-name">School of Politics,<br>Policy & Governance</div>
+      </div>
       <h2>Verify Your Identity</h2>
-      <p>Enter the email address you used during your application. We'll confirm your admission status before showing available slots.</p>
-      <label class="field-label">Application Email</label>
-      <input class="field-input" type="email" id="s-email" placeholder="yourname@email.com" onkeypress="if(event.key==='Enter')verifyStudent()" />
+      <p>Enter the email address from your SPPG application. We'll confirm your admission status before showing available slots.</p>
+      <label class="lbl">Application Email</label>
+      <input class="inp" type="email" id="s-email" placeholder="yourname@email.com" onkeypress="if(event.key==='Enter')verifyStudent()" />
       <div class="err" id="s-err"></div>
-      <button class="btn-fill" style="width:100%;margin-top:14px;" id="s-verify-btn" onclick="verifyStudent()">Verify & Continue</button>
+      <button class="btn btn-g" id="s-verify-btn" onclick="verifyStudent()">Verify & Continue</button>
+      <div class="support-note">Issues? Contact <a href="mailto:technology@nigeria.thesppg.org">technology@nigeria.thesppg.org</a></div>
+      <div style="text-align:center;margin-top:14px;"><button onclick="go('pg-landing')" style="background:none;border:none;color:var(--ink3);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">← Back</button></div>
     </div>
   </div>
 </div>
 
-<!-- BOOKING -->
 <div id="pg-booking" class="page">
-  <div class="booking-hero">
-    <div class="ey">Interview Scheduling</div>
-    <h1>Choose Your Slot</h1>
-    <div class="student-pill" id="s-pill">
-      <div class="s-avatar" id="s-initials">??</div>
-      <span class="s-name" id="s-display-name">Student</span>
+  <div class="bk-hero">
+    <div class="bk-hero-top">
+      <div class="bk-logo-sm">SPPG</div>
+      <span class="bk-school">School of Politics, Policy & Governance</span>
+    </div>
+    <h1>Choose Your Interview Slot</h1>
+    <div class="s-pill" id="s-pill">
+      <div class="s-av" id="s-init">?</div>
+      <span class="s-nm" id="s-nm">Student</span>
     </div>
   </div>
-  <div class="booking-body">
+  <div class="bk-body">
     <div class="cal-card">
-      <div class="cal-head">
-        <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+      <div class="cal-hd">
+        <button class="cal-nb" onclick="calPrev()">‹</button>
         <div class="cal-month" id="cal-lbl"></div>
-        <button class="cal-nav-btn" onclick="calNext()">›</button>
+        <button class="cal-nb" onclick="calNext()">›</button>
       </div>
       <div class="cal-wds">
         <div class="cal-wd">Su</div><div class="cal-wd">Mo</div><div class="cal-wd">Tu</div>
@@ -184,332 +197,194 @@ body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(
       <div class="cal-days" id="cal-days"></div>
     </div>
     <div class="time-panel" id="time-panel">
-      <div class="sec-label" id="time-label">Available Times</div>
-      <div id="time-slots"></div>
+      <div class="sec-lbl" id="time-lbl">Available Times</div>
+      <div class="slots-grid" id="time-slots"></div>
     </div>
     <div class="confirm-box" id="confirm-box">
-      <div class="confirm-preview" id="confirm-preview"></div>
-      <button class="btn-confirm" id="confirm-btn" onclick="doBook()">Confirm My Slot</button>
+      <div class="cprev" id="cprev"></div>
+      <button class="btn-confirm" id="confirm-btn" onclick="doBook()">Confirm My Interview Slot</button>
     </div>
   </div>
 </div>
 
-<!-- SUCCESS -->
 <div id="pg-success" class="page">
-  <div class="success-wrap">
-    <div class="success-icon">✓</div>
+  <div class="suc-wrap">
+    <div class="suc-icon">✓</div>
     <h2>You're Confirmed!</h2>
-    <p>Your interview is scheduled. A confirmation email has been sent to you with all the details.</p>
-    <div class="success-detail" id="success-detail"></div>
-    <p style="margin-top:16px;font-size:12px;color:var(--ink3);">The interview panel has been notified. Check your email for the Zoom link closer to your interview date.</p>
+    <p>Your SPPG admissions interview has been scheduled. A confirmation email is on its way to you.</p>
+    <div class="suc-detail" id="suc-detail"></div>
+    <p style="margin-top:14px;font-size:12px;color:var(--ink3);">The interview panel has been notified. You will receive the Zoom link details via email.</p>
+    <div class="sppg-footer">School of Politics, Policy & Governance · <a href="mailto:technology@nigeria.thesppg.org" style="color:var(--teal);text-decoration:none;">technology@nigeria.thesppg.org</a></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-
-<script src="/lib/store.js"></script>
+<script src="/lib/api.js"></script>
 <script>
-// ── state ──────────────────────────────────────────────────
-let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth();
-let selDate = null;
-let selInstanceId = null;
-let selSlotIndex = null;
-let currentStudent = null;
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+let calY=new Date().getFullYear(), calM=new Date().getMonth();
+let selDate=null, selInstanceId=null, selSlotIndex=null, selZoomIndex=0;
+let currentStudent=null, openSlots={}, cfg=null;
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
-function go(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// ── Email verify ───────────────────────────────────────────
-async function verifyStudent() {
-  const email = document.getElementById('s-email').value.trim().toLowerCase();
-  const btn   = document.getElementById('s-verify-btn');
-  const err   = document.getElementById('s-err');
-  err.style.display = 'none';
-  if (!email || !email.includes('@')) { showErr(err, 'Please enter a valid email.'); return; }
-
-  const st = STORE.get();
-
-  // Already booked?
-  const existing = st.bookings.find(b => b.studentEmail.toLowerCase() === email);
-  if (existing) { showErr(err, 'You have already booked a slot. Check your email for details.'); return; }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Checking…';
-
-  // Check local list first
-  let student = st.studentEmails.find(s => s.email.toLowerCase() === email);
-
-  // Fallback: Airtable via API proxy
-  if (!student) {
-    try {
-      const r = await fetch('/api/airtable', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'lookup',
-          table: st.airtable.table,
-          emailField: st.airtable.emailField,
-          email
-        })
-      });
-      const d = await r.json();
-      if (d.record) {
-        const rec = d.record;
-        const name = rec.fields['Name'] || rec.fields['Full Name'] || rec.fields['Student Name'] || email.split('@')[0];
-        student = { name, email, bookedInstanceId: null, bookedSlotIndex: null, airtableRecordId: rec.id };
-        // Auto-add to local list so we have the record id
-        st.studentEmails.push(student);
-        STORE.save();
-      }
-    } catch(e) { /* API proxy not available locally */ }
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Verify & Continue';
-
-  if (!student) {
-    showErr(err, 'Email not found in our applicant database. Please use the email from your application.');
-    return;
-  }
-
-  currentStudent = student;
-  const initials = student.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
-  document.getElementById('s-initials').textContent = initials;
-  document.getElementById('s-display-name').textContent = student.name;
-  go('pg-booking');
-  renderCal();
-}
-
-// ── Calendar ───────────────────────────────────────────────
-function renderCal() {
-  document.getElementById('cal-lbl').textContent = `${MONTHS[calMonth]} ${calYear}`;
-  const st = STORE.get();
-  const today = new Date();
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  const days = new Date(calYear, calMonth + 1, 0).getDate();
-  const grid = document.getElementById('cal-days');
-  grid.innerHTML = '';
-
-  for (let i = 0; i < firstDay; i++) {
-    const el = document.createElement('div'); el.className = 'cal-day'; grid.appendChild(el);
-  }
-  for (let d = 1; d <= days; d++) {
-    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const el = document.createElement('div');
-    el.className = 'cal-day';
-
-    const openMap = STORE.getOpenSlotsForDate(ds);
-    const totalOpen = Object.values(openMap).reduce((a,c) => a + c.length, 0);
-    const hasBlocks = st.panelInstances.some(inst => {
-      const blk = st.timeBlocks.find(b => b.id === inst.timeBlockId);
-      return blk && blk.date === ds;
-    });
-    const isPast = new Date(ds) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-    if (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()) el.classList.add('today');
-
-    el.innerHTML = `<span class="dn">${d}</span>`;
-
-    if (hasBlocks && !isPast) {
-      if (totalOpen === 0) {
-        el.classList.add('full');
-        el.innerHTML += '<span class="dot"></span>';
-        el.title = 'Fully booked';
+async function verifyStudent(){
+  const email=document.getElementById('s-email').value.trim().toLowerCase();
+  const btn=document.getElementById('s-verify-btn');
+  const err=document.getElementById('s-err');
+  err.style.display='none';
+  if(!email||!email.includes('@')){err.textContent='Please enter a valid email address.';err.style.display='block';return;}
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Checking…';
+  try{
+    // Check already booked
+    const bk=await API.db('lookupStudent',{email}).catch(()=>null);
+    if(bk && bk.booked_instance_id){err.textContent='You have already booked a slot. Check your email for confirmation details.';err.style.display='block';btn.disabled=false;btn.textContent='Verify & Continue';return;}
+    if(!bk){
+      // Try Airtable lookup
+      const cfgData=await API.db('getConfig');
+      const atResult=await API.airtable('lookup',{table:cfgData.airtable_table,emailField:cfgData.airtable_email_field,email});
+      if(atResult.record){
+        const rec=atResult.record;
+        const name=rec.fields['Name']||rec.fields['Full Name']||rec.fields['Student Name']||email.split('@')[0];
+        await API.db('addStudents',{students:[{name,email,airtable_record_id:rec.id}]});
+        currentStudent={name,email,airtable_record_id:rec.id};
       } else {
-        el.classList.add('has-slots');
-        if (selDate === ds) el.classList.add('sel');
-        el.innerHTML += '<span class="dot"></span>';
-        el.title = `${totalOpen} slot${totalOpen !== 1 ? 's' : ''} open`;
-        el.onclick = () => selectDate(ds);
+        err.innerHTML='Email not found in our applicant database. Please use the email from your SPPG application.<br><span style="color:var(--ink3);">If this is an error, contact <a href="mailto:technology@nigeria.thesppg.org" style="color:var(--teal);">technology@nigeria.thesppg.org</a></span>';
+        err.style.display='block';btn.disabled=false;btn.textContent='Verify & Continue';return;
       }
+    } else {
+      currentStudent=bk;
+    }
+    cfg=await API.db('getConfig');
+    openSlots=await API.db('getOpenSlots');
+    const initStr=currentStudent.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('s-init').textContent=initStr;
+    document.getElementById('s-nm').textContent=currentStudent.name;
+    go('pg-booking');renderCal();
+  }catch(e){err.textContent='Something went wrong. Please try again or contact technology@nigeria.thesppg.org';err.style.display='block';}
+  btn.disabled=false;btn.textContent='Verify & Continue';
+}
+
+function renderCal(){
+  document.getElementById('cal-lbl').textContent=`${MONTHS[calM]} ${calY}`;
+  const today=new Date();
+  const firstDay=new Date(calY,calM,1).getDay();
+  const days=new Date(calY,calM+1,0).getDate();
+  const grid=document.getElementById('cal-days');
+  grid.innerHTML='';
+  for(let i=0;i<firstDay;i++){const el=document.createElement('div');el.className='cday';grid.appendChild(el);}
+  for(let d=1;d<=days;d++){
+    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el=document.createElement('div');el.className='cday';
+    const daySlots=openSlots[ds]||{};
+    const totalOpen=Object.values(daySlots).reduce((a,c)=>a+c.length,0);
+    const isPast=new Date(ds)<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    if(d===today.getDate()&&calM===today.getMonth()&&calY===today.getFullYear())el.classList.add('today');
+    el.innerHTML=`<span class="dn">${d}</span>`;
+    if(totalOpen>0&&!isPast){
+      el.classList.add('avail');
+      if(selDate===ds)el.classList.add('sel');
+      el.innerHTML+=`<span class="dot"></span>`;
+      el.title=`${totalOpen} slot${totalOpen!==1?'s':''} open`;
+      el.onclick=()=>selDay(ds);
+    } else if(Object.keys(daySlots).length>0&&isPast){
+      el.classList.add('full');el.innerHTML+=`<span class="dot"></span>`;
     }
     grid.appendChild(el);
   }
 }
 
-function selectDate(ds) {
-  selDate = ds; selInstanceId = null; selSlotIndex = null;
-  renderCal();
-  renderTimeSlots(ds);
+function selDay(ds){
+  selDate=ds;selInstanceId=null;selSlotIndex=null;
+  renderCal();renderTimeSlots(ds);
   document.getElementById('confirm-box').classList.remove('show');
 }
 
-function renderTimeSlots(ds) {
-  const st = STORE.get();
-  const openMap = STORE.getOpenSlotsForDate(ds);
-  const panel = document.getElementById('time-panel');
-  const container = document.getElementById('time-slots');
-
-  // Group by shift
-  const shiftOrder = ['morning','evening','sat-morning','sat-afternoon'];
-  const shiftLabels = { morning: 'Morning Shift', evening: 'Evening Shift', 'sat-morning': 'Saturday Morning', 'sat-afternoon': 'Saturday Afternoon' };
-
-  // Build time → shift mapping
-  const timeToShift = {};
-  for (const inst of st.panelInstances) {
-    const blk = st.timeBlocks.find(b => b.id === inst.timeBlockId);
-    if (!blk || blk.date !== ds) continue;
-    for (const slot of inst.studentSlots) {
-      timeToShift[slot.startTime] = blk.shift;
-    }
-  }
-
-  // Group open times by shift
-  const byShift = {};
-  for (const [time, slots] of Object.entries(openMap)) {
-    const shift = timeToShift[time] || 'morning';
-    if (!byShift[shift]) byShift[shift] = {};
-    byShift[shift][time] = slots;
-  }
-
-  container.innerHTML = '';
-  const d = new Date(ds + 'T00:00:00');
-  document.getElementById('time-label').textContent = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
-
-  let hasAny = false;
-  for (const shift of shiftOrder) {
-    if (!byShift[shift]) continue;
-    hasAny = true;
-    const times = Object.keys(byShift[shift]).sort();
-    const sg = document.createElement('div'); sg.className = 'shift-group';
-    sg.innerHTML = `<div class="shift-title">${shiftLabels[shift]}</div><div class="slots-grid" id="sg-${shift}"></div>`;
-    container.appendChild(sg);
-    const grid = document.getElementById(`sg-${shift}`);
-    for (const time of times) {
-      const available = byShift[shift][time];
-      const chip = document.createElement('div');
-      chip.className = 'slot-chip';
-      const t = STORE.formatTime(time);
-      chip.innerHTML = `<span class="slot-time">${t}</span><span class="slot-sub">${available.length} panel${available.length > 1 ? 's' : ''} open</span>`;
-      chip.onclick = () => selectSlot(time, available[0], chip);
+function renderTimeSlots(ds){
+  const daySlots=openSlots[ds]||{};
+  const d=new Date(ds+'T00:00:00');
+  document.getElementById('time-lbl').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const grid=document.getElementById('time-slots');
+  const times=Object.keys(daySlots).sort();
+  if(!times.length){grid.innerHTML='<p style="font-size:13px;color:var(--ink3);grid-column:1/-1;">No open slots for this day.</p>';}
+  else{
+    grid.innerHTML='';
+    times.forEach(time=>{
+      const refs=daySlots[time];
+      const chip=document.createElement('div');chip.className='slot-chip';
+      const t=API.formatTime(time);
+      chip.innerHTML=`<span class="st">${t}</span><span class="ss">${refs.length} panel${refs.length>1?'s':''} open</span>`;
+      chip.onclick=()=>selSlot(time,refs[0],chip);
       grid.appendChild(chip);
-    }
+    });
   }
-
-  if (!hasAny) container.innerHTML = '<p style="font-size:13px;color:var(--ink3);padding:8px 0;">No open slots for this date.</p>';
-  panel.classList.add('show');
+  document.getElementById('time-panel').classList.add('show');
 }
 
-function selectSlot(time, ref, chip) {
-  document.querySelectorAll('.slot-chip').forEach(c => c.classList.remove('sel'));
+function selSlot(time,ref,chip){
+  document.querySelectorAll('.slot-chip').forEach(c=>c.classList.remove('sel'));
   chip.classList.add('sel');
-  selInstanceId = ref.instanceId;
-  selSlotIndex  = ref.slotIndex;
-
-  const d = new Date(selDate + 'T00:00:00');
-  const dl = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  document.getElementById('confirm-preview').innerHTML =
-    `<strong>${currentStudent.name}</strong><br>📅 ${dl}<br>🕐 ${STORE.formatTime(time)}<br><span style="font-size:11px;opacity:.8;">Panel details will be sent to your email.</span>`;
+  selInstanceId=ref.instanceId;selSlotIndex=ref.slotIndex;selZoomIndex=ref.zoomIndex||0;
+  const d=new Date(selDate+'T00:00:00');
+  const dl=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('cprev').innerHTML=`<strong>${currentStudent.name}</strong><br>📅 ${dl}<br>🕐 ${API.formatTime(time)}<br><span style="font-size:11px;opacity:.8;">Panel and Zoom details will be sent to your email.</span>`;
   document.getElementById('confirm-box').classList.add('show');
 }
 
-async function doBook() {
-  const btn = document.getElementById('confirm-btn');
-  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Confirming…';
-
-  const booking = STORE.bookSlot(currentStudent.email, selInstanceId, selSlotIndex);
-  if (!booking) {
-    toast('That slot was just taken — please select another.', 'bad');
-    btn.disabled = false; btn.textContent = 'Confirm My Slot';
-    selInstanceId = null; selSlotIndex = null;
-    renderTimeSlots(selDate);
-    return;
-  }
-
-  const st = STORE.get();
-  const inst = st.panelInstances.find(i => i.id === booking.instanceId);
-  const panelists = (inst?.panelistIds || []).map(pid => st.panelists.find(p => p.id === pid)).filter(Boolean);
-  const zoom = st.config.zoomLinks.find(z => z.url) || {};
-
-  // Parallel: Airtable + emails
-  await Promise.allSettled([
-    patchAirtable(booking, st),
-    sendStudentEmail(booking, panelists, zoom, st),
-    sendPanelistEmails(booking, panelists, zoom, st),
-  ]);
-
-  btn.disabled = false; btn.textContent = 'Confirm My Slot';
-
-  // Success page
-  const d = new Date(booking.date + 'T00:00:00');
-  const dl = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  document.getElementById('success-detail').innerHTML = `
-    <div class="sd-row"><span class="sd-label">Name</span><span class="sd-val">${booking.studentName}</span></div>
-    <div class="sd-row"><span class="sd-label">Date</span><span class="sd-val">${dl}</span></div>
-    <div class="sd-row"><span class="sd-label">Time</span><span class="sd-val">${STORE.formatTime(booking.slotTime)}</span></div>
-    <div class="sd-row"><span class="sd-label">Panel</span><span class="sd-val">${booking.panelLabel}</span></div>
-    <div class="sd-row"><span class="sd-label">Confirmation</span><span class="sd-val">Sent to email ✓</span></div>`;
-  go('pg-success');
-}
-
-// ── Airtable ───────────────────────────────────────────────
-async function patchAirtable(booking, st) {
-  try {
-    let recordId = booking.airtableRecordId;
-    if (!recordId) {
-      const r = await fetch('/api/airtable', { method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'lookup', table: st.airtable.table, emailField: st.airtable.emailField, email: booking.studentEmail }) });
-      const d = await r.json();
-      recordId = d.record?.id;
+async function doBook(){
+  const btn=document.getElementById('confirm-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Confirming…';
+  try{
+    const result=await API.db('bookSlot',{email:currentStudent.email,instanceId:selInstanceId,slotIndex:selSlotIndex});
+    const {booking,panelists,zoom,config:c,airtablePanelLabel}=result;
+    // Airtable update
+    if(booking.airtable_record_id){
+      await API.airtable('patch',{table:c.airtable_table,recordId:booking.airtable_record_id,fields:{[c.airtable_date_field]:`${booking.date} ${booking.slot_time}`,[c.airtable_panel_field||'Video Panels']:airtablePanelLabel}});
+    } else {
+      const at=await API.airtable('lookup',{table:c.airtable_table,emailField:c.airtable_email_field,email:currentStudent.email});
+      if(at.record){
+        await API.airtable('patch',{table:c.airtable_table,recordId:at.record.id,fields:{[c.airtable_date_field]:`${booking.date} ${booking.slot_time}`,'Video Panels':airtablePanelLabel}});
+      }
     }
-    if (!recordId) return;
-    await fetch('/api/airtable', { method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'patch', table: st.airtable.table, recordId,
-        fields: {
-          [st.airtable.interviewDateField]: `${booking.date} ${booking.slotTime}`,
-          [st.airtable.panelField]: booking.panelLabel,
-        }
-      })
-    });
-  } catch(e) { console.warn('Airtable patch failed', e); }
-}
-
-// ── Emails ─────────────────────────────────────────────────
-async function sendStudentEmail(booking, panelists, zoom, st) {
-  const tpl = st.emailjs.studentTpl; if (!tpl) return;
-  const r = await fetch('/api/email', { method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ templateId: tpl, params: {
-      to_email: booking.studentEmail, to_name: booking.studentName,
-      interview_date: new Date(booking.date+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),
-      interview_time: STORE.formatTime(booking.slotTime),
-      panel_label: booking.panelLabel,
-      zoom_url: zoom.url || 'TBC', zoom_meeting_id: zoom.meetingId || '', zoom_passcode: zoom.passcode || '',
-    }})
-  });
-  STORE.log('email', `Confirmation email sent to student ${booking.studentName}`, { to: booking.studentEmail });
-}
-
-async function sendPanelistEmails(booking, panelists, zoom, st) {
-  const tpl = st.emailjs.panelistTpl; if (!tpl || !panelists.length) return;
-  const d = new Date(booking.date+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const coPanelists = panelists.map(p => `${p.name} (${p.email})`).join(', ');
-  for (const p of panelists) {
-    await fetch('/api/email', { method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ templateId: tpl, params: {
-        to_email: p.email, to_name: p.name,
-        student_name: booking.studentName, student_email: booking.studentEmail,
-        interview_date: d, interview_time: STORE.formatTime(booking.slotTime),
-        panel_label: booking.panelLabel, co_panelists: coPanelists,
-        zoom_url: zoom.url || 'TBC', zoom_meeting_id: zoom.meetingId || '', zoom_passcode: zoom.passcode || '',
-      }})
-    });
-    STORE.log('email', `Panelist notification sent to ${p.name} re: ${booking.studentName}`, { to: p.email });
+    // Student email
+    if(c.emailjs_student_tpl){
+      const dl=API.fmtDateLong(booking.date);
+      await API.email(c.emailjs_student_tpl,{to_email:booking.student_email,to_name:booking.student_name,interview_date:dl,interview_time:API.formatTime(booking.slot_time),panel_label:airtablePanelLabel,zoom_url:zoom.url||'TBC',zoom_meeting_id:zoom.meetingId||'',zoom_passcode:zoom.passcode||''});
+      await API.db('addLog',{type:'email',message:`Confirmation email sent to ${booking.student_name}`,meta:{to:booking.student_email}});
+    }
+    // Panelist emails
+    if(c.emailjs_panelist_tpl&&panelists.length){
+      const dl=API.fmtDateLong(booking.date);
+      const co=panelists.map(p=>`${p.name} (${p.email})`).join(', ');
+      for(const p of panelists){
+        await API.email(c.emailjs_panelist_tpl,{to_email:p.email,to_name:p.name,student_name:booking.student_name,student_email:booking.student_email,interview_date:dl,interview_time:API.formatTime(booking.slot_time),panel_label:airtablePanelLabel,co_panelists:co,zoom_url:zoom.url||'TBC',zoom_meeting_id:zoom.meetingId||'',zoom_passcode:zoom.passcode||''});
+        await API.db('addLog',{type:'email',message:`Panel notification sent to ${p.name} re: ${booking.student_name}`,meta:{to:p.email}});
+      }
+    }
+    // Show success
+    const d=new Date(booking.date+'T00:00:00');
+    const dl=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('suc-detail').innerHTML=`
+      <div class="sdr"><span class="sdl">Name</span><span class="sdv">${booking.student_name}</span></div>
+      <div class="sdr"><span class="sdl">Date</span><span class="sdv">${dl}</span></div>
+      <div class="sdr"><span class="sdl">Time</span><span class="sdv">${API.formatTime(booking.slot_time)}</span></div>
+      <div class="sdr"><span class="sdl">Panel</span><span class="sdv">${airtablePanelLabel}</span></div>
+      <div class="sdr"><span class="sdl">Confirmation</span><span class="sdv">Sent to email ✓</span></div>`;
+    go('pg-success');
+  }catch(e){
+    toast(e.message.includes('taken')?'That slot was just taken — please select another.':'Something went wrong. Try again or contact technology@nigeria.thesppg.org','bad');
+    selInstanceId=null;selSlotIndex=null;
+    openSlots=await API.db('getOpenSlots').catch(()=>openSlots);
+    renderTimeSlots(selDate);
   }
+  btn.disabled=false;btn.textContent='Confirm My Interview Slot';
 }
 
-// ── Calendar nav ───────────────────────────────────────────
-function calPrev() { if (calMonth===0){calMonth=11;calYear--;}else calMonth--; selDate=null; renderCal(); document.getElementById('time-panel').classList.remove('show'); document.getElementById('confirm-box').classList.remove('show'); }
-function calNext() { if (calMonth===11){calMonth=0;calYear++;}else calMonth++; selDate=null; renderCal(); document.getElementById('time-panel').classList.remove('show'); document.getElementById('confirm-box').classList.remove('show'); }
+function calPrev(){if(calM===0){calM=11;calY--;}else calM--;selDate=null;renderCal();document.getElementById('time-panel').classList.remove('show');document.getElementById('confirm-box').classList.remove('show');}
+function calNext(){if(calM===11){calM=0;calY++;}else calM++;selDate=null;renderCal();document.getElementById('time-panel').classList.remove('show');document.getElementById('confirm-box').classList.remove('show');}
 
-// ── Toast ──────────────────────────────────────────────────
 let _tt;
-function toast(msg, type='') { const el=document.getElementById('toast'); el.textContent=msg; el.className='toast show '+(type||''); clearTimeout(_tt); _tt=setTimeout(()=>el.className='toast',3000); }
-function showErr(el, msg) { el.textContent=msg; el.style.display='block'; }
+function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+(type||'');clearTimeout(_tt);_tt=setTimeout(()=>el.className='toast',3500);}
 </script>
 </body>
 </html>
