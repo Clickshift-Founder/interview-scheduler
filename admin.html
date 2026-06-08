@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Interview Scheduler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0F1117;--ink2:#4A4D58;--ink3:#9699A6;--paper:#F5F4F0;--white:#FFFFFF;--border:rgba(15,17,23,.10);--border2:rgba(15,17,23,.18);--green:#1B6B45;--gbg:#EBF5F0;--gborder:#B8DEC9;--amber:#B45309;--abg:#FEF3E2;--red:#C0392B;--rbg:#FEF2F2;--blue:#1D4ED8;--bbg:#EFF6FF;--r:12px;--rs:8px;--sidebar:220px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+
+/* ── LOGIN ── */
+#pg-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.login-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:36px 30px;width:100%;max-width:360px;box-shadow:0 4px 24px rgba(0,0,0,.06);}
+.login-card h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:6px;}
+.login-card p{font-size:13px;color:var(--ink2);margin-bottom:22px;line-height:1.6;}
+
+/* ── APP SHELL ── */
+#pg-app{display:none;min-height:100vh;}
+.shell{display:flex;min-height:100vh;}
+
+/* Sidebar */
+.sidebar{width:var(--sidebar);background:var(--ink);color:#fff;display:flex;flex-direction:column;padding:24px 0;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sb-logo{padding:0 18px 24px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:12px;}
+.sb-logo-title{font-family:'Playfair Display',serif;font-size:16px;line-height:1.3;}
+.sb-logo-sub{font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.45;margin-top:3px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13px;cursor:pointer;color:rgba(255,255,255,.6);transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+.nav-item.active{background:rgba(255,255,255,.12);color:#fff;font-weight:500;}
+.nav-icon{font-size:15px;width:18px;text-align:center;}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:700;background:var(--green);color:#fff;padding:2px 7px;border-radius:10px;}
+.sb-spacer{flex:1;}
+.sb-footer{padding:12px 18px;border-top:1px solid rgba(255,255,255,.08);margin-top:8px;}
+.sb-user{font-size:12px;color:rgba(255,255,255,.5);}
+
+/* Main */
+.main{flex:1;overflow-y:auto;background:var(--paper);}
+.section{display:none;padding:28px 28px 60px;}
+.section.active{display:block;}
+.sec-head{margin-bottom:24px;}
+.sec-head h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;}
+.sec-head p{font-size:13px;color:var(--ink2);margin-top:4px;}
+
+/* Cards */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;}
+.card-title{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px;}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+.stat-lbl{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.stat-val{font-family:'Playfair Display',serif;font-size:28px;}
+.stat-sub{font-size:11px;color:var(--ink3);margin-top:3px;}
+
+/* Forms */
+.lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:6px;}
+.inp{width:100%;height:40px;border:1px solid var(--border2);border-radius:var(--rs);padding:0 12px;font:13px 'DM Sans',sans-serif;color:var(--ink);background:var(--paper);outline:none;transition:border-color .18s;}
+.inp:focus{border-color:var(--green);}
+.inp-sm{width:auto;min-width:80px;}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:end;margin-bottom:12px;}
+.fg{display:flex;flex-direction:column;}
+.btn{height:40px;padding:0 16px;border-radius:var(--rs);border:none;font:600 13px 'DM Sans',sans-serif;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{opacity:.88;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-red:hover{opacity:.88;}
+.btn-ghost{background:none;border:1px solid var(--border2);color:var(--ink2);}
+.btn-ghost:hover{border-color:var(--green);color:var(--green);}
+.btn-sm{height:32px;padding:0 12px;font-size:12px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);border-bottom:1px solid var(--border);font-weight:700;}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:middle;}
+tr:last-child td{border:none;}
+tr:hover td{background:rgba(0,0,0,.015);}
+
+/* Badges */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.b-green{background:var(--gbg);color:var(--green);}
+.b-amber{background:var(--abg);color:var(--amber);}
+.b-red{background:var(--rbg);color:var(--red);}
+.b-gray{background:var(--paper);color:var(--ink3);}
+.b-blue{background:var(--bbg);color:var(--blue);}
+
+/* Panel Instances Grid */
+.instances-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.inst-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+.inst-card.ready{border-color:var(--gborder);}
+.inst-card.forming{border-color:#FCD34D;}
+.inst-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.inst-title{font-size:14px;font-weight:600;}
+.inst-sub{font-size:11px;color:var(--ink3);margin-top:2px;}
+.inst-panelists{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.inst-panelist{display:flex;align-items:center;gap:8px;font-size:12px;}
+.av{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.av.empty{background:var(--paper);border:1px dashed var(--border2);color:var(--ink3);}
+.inst-slots{font-size:12px;color:var(--ink2);margin-bottom:10px;}
+.inst-actions{display:flex;gap:6px;}
+
+/* Activity Log */
+.log-list{display:flex;flex-direction:column;gap:0;}
+.log-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.log-item:last-child{border:none;}
+.log-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.log-dot.booking{background:var(--green);}
+.log-dot.panel{background:var(--blue);}
+.log-dot.availability{background:var(--amber);}
+.log-dot.admin{background:var(--ink3);}
+.log-time{font-size:11px;color:var(--ink3);white-space:nowrap;margin-top:2px;}
+.log-msg{flex:1;line-height:1.5;}
+
+/* Itinerary */
+.itinerary-block{margin-bottom:20px;}
+.itin-head{font-weight:600;font-size:14px;margin-bottom:8px;padding:8px 12px;background:var(--ink);color:#fff;border-radius:var(--rs);}
+.itin-slot{display:flex;gap:12px;align-items:center;padding:9px 12px;background:var(--white);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:6px;font-size:13px;}
+.itin-time{font-weight:600;min-width:70px;color:var(--green);}
+.itin-student{flex:1;}
+.itin-break{color:var(--ink3);font-style:italic;}
+
+/* Zoom links */
+.zoom-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;}
+.zoom-card h4{font-size:13px;font-weight:600;margin-bottom:12px;}
+.zoom-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:0;}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--white);border-radius:var(--r);padding:28px;width:100%;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,.18);max-height:90vh;overflow-y:auto;}
+.modal h3{font-size:17px;font-weight:600;margin-bottom:18px;}
+.modal-form{display:flex;flex-direction:column;gap:12px;}
+.modal-actions{display:flex;gap:10px;margin-top:18px;}
+.modal-cancel{flex:1;height:40px;border:1px solid var(--border);border-radius:var(--rs);background:none;font:500 14px 'DM Sans',sans-serif;cursor:pointer;color:var(--ink2);}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:300px;line-height:1.5;}
+.toast.show{opacity:1;}
+.toast.ok{background:var(--green);}
+.toast.bad{background:var(--red);}
+
+/* Email composer */
+.email-comp{background:var(--paper);border:1px solid var(--border);border-radius:var(--rs);padding:14px;font-size:13px;color:var(--ink2);margin-bottom:10px;}
+.email-comp strong{color:var(--ink);}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;background:var(--paper);border-radius:var(--rs);padding:4px;margin-bottom:18px;width:fit-content;}
+.tab-btn{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--ink2);font-family:'DM Sans',sans-serif;transition:all .15s;}
+.tab-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+
+textarea.inp{height:80px;resize:vertical;padding:10px 12px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="pg-login">
+  <div class="login-card">
+    <h2>Admin Portal</h2>
+    <p>Sign in to manage the interview scheduling system.</p>
+    <label class="lbl">Password</label>
+    <input class="inp" type="password" id="a-pw" placeholder="Enter admin password" onkeypress="if(event.key==='Enter')adminLogin()" />
+    <div style="font-size:12px;color:var(--red);margin-top:8px;display:none;" id="a-err"></div>
+    <button class="btn btn-green" style="width:100%;margin-top:14px;" onclick="adminLogin()">Sign In</button>
+    <div style="text-align:center;margin-top:14px;"><a href="/" style="font-size:12px;color:var(--ink3);text-decoration:none;">← Back to booking portal</a></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="pg-app">
+<div class="shell">
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-title">Interview<br>Scheduler</div>
+    <div class="sb-logo-sub">Admin Console</div>
+  </div>
+  <button class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</button>
+  <button class="nav-item" onclick="nav('time-blocks',this)"><span class="nav-icon">📅</span> Time Blocks</button>
+  <button class="nav-item" onclick="nav('panels',this)"><span class="nav-icon">👥</span> Panels</button>
+  <button class="nav-item" onclick="nav('panelists',this)"><span class="nav-icon">🧑‍💼</span> Panelists</button>
+  <button class="nav-item" onclick="nav('students',this)"><span class="nav-icon">🎓</span> Students</button>
+  <button class="nav-item" onclick="nav('bookings',this)"><span class="nav-icon">📋</span> Bookings</button>
+  <button class="nav-item" onclick="nav('itinerary',this)"><span class="nav-icon">🗓️</span> Itinerary</button>
+  <button class="nav-item" onclick="nav('zoom',this)"><span class="nav-icon">🎥</span> Zoom Links</button>
+  <button class="nav-item" onclick="nav('email',this)"><span class="nav-icon">✉️</span> Email</button>
+  <button class="nav-item" onclick="nav('report',this)"><span class="nav-icon">📑</span> Panelist Report</button>
+  <button class="nav-item" onclick="nav('log',this)"><span class="nav-icon">📜</span> Activity Log</button>
+  <button class="nav-item" onclick="nav('settings',this)"><span class="nav-icon">⚙️</span> Settings</button>
+  <div class="sb-spacer"></div>
+  <div class="sb-footer">
+    <div class="sb-user">Signed in as Admin</div>
+    <button class="nav-item" style="padding:8px 0;margin-top:4px;" onclick="logout()"><span class="nav-icon">🚪</span> Sign Out</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="section active" id="sec-dashboard">
+  <div class="sec-head"><h2>Dashboard</h2><p>Live overview of the interview scheduling system.</p></div>
+  <div class="stats-row" id="dash-stats"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="card">
+      <div class="card-title">Panel Instances</div>
+      <div id="dash-instances"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recent Activity</div>
+      <div id="dash-log"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TIME BLOCKS -->
+<div class="section" id="sec-time-blocks">
+  <div class="sec-head"><h2>Time Blocks</h2><p>Add available dates and shifts. Panelists will select these to indicate their availability.</p></div>
+  <div class="card">
+    <div class="card-title">Add Time Block</div>
+    <div class="form-row">
+      <div class="fg"><label class="lbl">Date</label><input class="inp" type="date" id="tb-date" /></div>
+      <div class="fg"><label class="lbl">Shift Type</label>
+        <select class="inp" id="tb-shift">
+          <option value="morning">Weekday Morning (08:00–10:00)</option>
+          <option value="evening">Weekday Evening (17:00–19:30)</option>
+          <option value="sat-morning">Saturday Morning (09:00–12:00)</option>
+          <option value="sat-afternoon">Saturday Afternoon (14:00–17:00)</option>
+        </select>
+      </div>
+      <div class="fg" style="justify-content:flex-end;"><button class="btn btn-green" onclick="addTimeBlock()">+ Add Block</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">All Time Blocks</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Day</th><th>Shift</th><th>Time</th><th>Panelists</th><th>Instances</th><th></th></tr></thead><tbody id="tb-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- PANELS -->
+<div class="section" id="sec-panels">
+  <div class="sec-head"><h2>Panel Instances</h2><p>Dynamically formed panels. A panel forms when ≥2 panelists share a time block. Manually add a panelist to a forming panel if needed.</p></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="panelTab('all',this)">All</button>
+    <button class="tab-btn" onclick="panelTab('forming',this)">Forming</button>
+    <button class="tab-btn" onclick="panelTab('ready',this)">Ready</button>
+    <button class="tab-btn" onclick="panelTab('active',this)">Active</button>
+    <button class="tab-btn" onclick="panelTab('completed',this)">Completed</button>
+  </div>
+  <div class="instances-grid" id="instances-grid"></div>
+</div>
+
+<!-- PANELISTS -->
+<div class="section" id="sec-panelists">
+  <div class="sec-head"><h2>Panelists</h2><p>Register panelists so they can access the availability portal.</p></div>
+  <div class="card">
+    <div class="card-title">Add Panelist</div>
+    <div class="form-row">
+      <div class="fg"><label class="lbl">Full Name</label><input class="inp" type="text" id="pl-name" placeholder="Dr. Amina Osei" /></div>
+      <div class="fg"><label class="lbl">Email</label><input class="inp" type="email" id="pl-email" placeholder="amina@institution.edu" /></div>
+      <div class="fg"><label class="lbl">Department (optional)</label><input class="inp" type="text" id="pl-dept" placeholder="Admissions" /></div>
+      <div class="fg" style="justify-content:flex-end;"><button class="btn btn-green" onclick="addPanelist()">+ Add</button></div>
+    </div>
+    <div style="margin-top:10px;">
+      <div class="tabs" style="margin-bottom:10px;">
+        <button class="tab-btn active" onclick="panelistImportTab('single',this)">Single</button>
+        <button class="tab-btn" onclick="panelistImportTab('bulk',this)">Bulk CSV</button>
+      </div>
+      <div id="pl-tab-single" style="display:none;font-size:12px;color:var(--ink3);">Use the form above for single additions.</div>
+      <div id="pl-tab-bulk" style="display:none;">
+        <label class="lbl">CSV (name, email, department)</label>
+        <input type="file" id="pl-csv" accept=".csv" onchange="importPanelistCSV(event)" style="font-size:13px;" />
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="card-title" style="margin:0;">All Panelists</div>
+      <input class="inp" id="pl-search" placeholder="Search…" oninput="renderPanelists()" style="width:200px;height:34px;" />
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Dept</th><th>Blocks</th><th>Panels</th><th></th></tr></thead><tbody id="pl-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- STUDENTS -->
+<div class="section" id="sec-students">
+  <div class="sec-head"><h2>Student Emails</h2><p>Only students on this list can book. Add individually, paste bulk, or import CSV.</p></div>
+  <div class="card">
+    <div class="card-title">Add Students</div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="stuTab('single',this)">Single</button>
+      <button class="tab-btn" onclick="stuTab('bulk',this)">Bulk Paste</button>
+      <button class="tab-btn" onclick="stuTab('csv',this)">CSV Import</button>
+    </div>
+    <div id="stu-tab-single">
+      <div class="form-row">
+        <div class="fg"><label class="lbl">Name</label><input class="inp" id="stu-name" placeholder="Jane Doe" /></div>
+        <div class="fg"><label class="lbl">Email</label><input class="inp" type="email" id="stu-email" placeholder="jane@email.com" /></div>
+        <div class="fg" style="justify-content:flex-end;"><button class="btn btn-green" onclick="addStudent()">+ Add</button></div>
+      </div>
+    </div>
+    <div id="stu-tab-bulk" style="display:none;">
+      <textarea class="inp" id="stu-bulk" style="height:90px;padding:10px 12px;resize:vertical;" placeholder="One per line or comma-separated:&#10;jane@email.com, Jane Doe&#10;bob@email.com"></textarea>
+      <button class="btn btn-green btn-sm" style="margin-top:8px;" onclick="addBulkStudents()">Import</button>
+    </div>
+    <div id="stu-tab-csv" style="display:none;">
+      <p style="font-size:12px;color:var(--ink2);margin-bottom:8px;">CSV must have columns: <code>name</code>, <code>email</code></p>
+      <input type="file" id="stu-csv" accept=".csv" onchange="importStudentCSV(event)" style="font-size:13px;" />
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap;">
+      <input class="inp" id="stu-search" placeholder="Search students…" oninput="renderStudents()" style="flex:1;min-width:180px;height:36px;" />
+      <button class="btn btn-red btn-sm" onclick="clearStudents()">Clear All</button>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Assigned Panel</th><th></th></tr></thead><tbody id="stu-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- BOOKINGS -->
+<div class="section" id="sec-bookings">
+  <div class="sec-head"><h2>Bookings</h2><p>All confirmed interview slots. Manually assign a student to a panel if needed.</p></div>
+  <div class="stats-row" id="bk-stats"></div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">Manual Assignment</div>
+    <p style="font-size:13px;color:var(--ink2);margin-bottom:14px;">Override — assign a student to a specific panel instance slot directly.</p>
+    <div class="form-row">
+      <div class="fg"><label class="lbl">Student Email</label><input class="inp" id="ma-email" placeholder="student@email.com" /></div>
+      <div class="fg"><label class="lbl">Panel Instance</label><select class="inp" id="ma-instance"></select></div>
+      <div class="fg"><label class="lbl">Time Slot</label><select class="inp" id="ma-slot"></select></div>
+      <div class="fg" style="justify-content:flex-end;"><button class="btn btn-green" onclick="manualAssign()">Assign</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div class="card-title" style="margin:0;">All Bookings</div>
+      <button class="btn btn-ghost btn-sm" onclick="exportBookings()">Export CSV</button>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>Student</th><th>Email</th><th>Date</th><th>Time</th><th>Panel</th><th>Booked</th></tr></thead><tbody id="bk-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ITINERARY -->
+<div class="section" id="sec-itinerary">
+  <div class="sec-head"><h2>Interview Itinerary</h2><p>Complete schedule by panel instance. Download to share with the admissions team.</p></div>
+  <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+    <button class="btn btn-green" onclick="exportItinerary()">Download PDF / Print</button>
+    <button class="btn btn-ghost" onclick="exportItineraryCSV()">Export CSV</button>
+  </div>
+  <div id="itinerary-body"></div>
+</div>
+
+<!-- ZOOM LINKS -->
+<div class="section" id="sec-zoom">
+  <div class="sec-head"><h2>Zoom Links</h2><p>Up to 3 concurrent Zoom rooms. These are included in all confirmation emails.</p></div>
+  <div id="zoom-cards"></div>
+  <button class="btn btn-green" onclick="saveZoom()">Save Zoom Links</button>
+</div>
+
+<!-- EMAIL -->
+<div class="section" id="sec-email">
+  <div class="sec-head"><h2>Email</h2><p>Manually trigger emails to students or panelists. Configure templates below.</p></div>
+  <div class="card">
+    <div class="card-title">Send Manual Email</div>
+    <div class="form-row">
+      <div class="fg"><label class="lbl">Recipient Type</label>
+        <select class="inp" id="em-type" onchange="updateEmailRecipients()">
+          <option value="student">Student</option>
+          <option value="panelist">All Panelists in Instance</option>
+        </select>
+      </div>
+      <div class="fg"><label class="lbl">Recipient</label><select class="inp" id="em-recipient"></select></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label class="lbl">Template</label>
+        <select class="inp" id="em-tpl">
+          <option value="student">Student Confirmation</option>
+          <option value="panelist">Panelist Notification</option>
+        </select>
+      </div>
+    </div>
+    <div class="email-comp" id="em-preview">Select a recipient to preview.</div>
+    <button class="btn btn-green" onclick="sendManualEmail()">Send Email</button>
+  </div>
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title">EmailJS Template Variables Reference</div>
+    <div style="font-size:13px;color:var(--ink2);line-height:1.9;">
+      <strong>Student template:</strong> <code>{{to_name}}</code> <code>{{interview_date}}</code> <code>{{interview_time}}</code> <code>{{panel_label}}</code> <code>{{zoom_url}}</code> <code>{{zoom_meeting_id}}</code> <code>{{zoom_passcode}}</code><br>
+      <strong>Panelist template:</strong> <code>{{to_name}}</code> <code>{{student_name}}</code> <code>{{student_email}}</code> <code>{{interview_date}}</code> <code>{{interview_time}}</code> <code>{{panel_label}}</code> <code>{{co_panelists}}</code> <code>{{zoom_url}}</code> <code>{{zoom_meeting_id}}</code> <code>{{zoom_passcode}}</code>
+    </div>
+  </div>
+</div>
+
+<!-- PANELIST REPORT -->
+<div class="section" id="sec-report">
+  <div class="sec-head"><h2>Panelist Report</h2><p>Every panelist, every panel they sat on, the dates, and the students they interviewed. Download to share with admissions leadership.</p></div>
+  <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+    <button class="btn btn-green" onclick="exportReportCSV()">Export CSV</button>
+    <button class="btn btn-ghost" onclick="window.print()">Print / PDF</button>
+  </div>
+  <div id="report-body"></div>
+</div>
+
+<!-- ACTIVITY LOG -->
+<div class="section" id="sec-log">
+  <div class="sec-head"><h2>Activity Log</h2><p>All system events in real time.</p></div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div class="card-title" style="margin:0;">Recent Events</div>
+      <button class="btn btn-ghost btn-sm" onclick="clearLog()">Clear Log</button>
+    </div>
+    <div class="log-list" id="log-list"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="section" id="sec-settings">
+  <div class="sec-head"><h2>Settings</h2><p>Configure integrations and system parameters.</p></div>
+  <div class="card">
+    <div class="card-title">Scheduling Parameters</div>
+    <div class="form-row">
+      <div class="fg"><label class="lbl">Min Blocks Required (panelists)</label><input class="inp" type="number" id="cfg-min" min="1" max="10" /></div>
+      <div class="fg"><label class="lbl">Interview Duration (mins)</label><input class="inp" type="number" id="cfg-dur" min="5" max="60" /></div>
+      <div class="fg"><label class="lbl">Buffer Between (mins)</label><input class="inp" type="number" id="cfg-buf" min="0" max="30" /></div>
+      <div class="fg"><label class="lbl">Break After N Students</label><input class="inp" type="number" id="cfg-brk" min="1" max="10" /></div>
+      <div class="fg"><label class="lbl">Break Duration (mins)</label><input class="inp" type="number" id="cfg-brkd" min="5" max="60" /></div>
+    </div>
+    <button class="btn btn-green" onclick="saveConfig()">Save Parameters</button>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">Airtable Integration</div>
+    <div class="form-row">
+      <div class="fg"><label class="lbl">Base ID</label><input class="inp" id="at-base" placeholder="appXXXXXXXXXX" /></div>
+      <div class="fg"><label class="lbl">Table Name</label><input class="inp" id="at-table" placeholder="Applications" /></div>
+      <div class="fg"><label class="lbl">Email Field</label><input class="inp" id="at-email-f" placeholder="Email" /></div>
+      <div class="fg"><label class="lbl">Interview Date Field</label><input class="inp" id="at-date-f" placeholder="Interview Date" /></div>
+    </div>
+    <p style="font-size:12px;color:var(--ink2);margin-bottom:10px;">Panel field is fixed: <strong>Video Panels</strong> (single select, options Panel 1–Panel 10). Your AIRTABLE_PAT lives in Vercel environment variables — never stored in the browser.</p>
+    <button class="btn btn-green" onclick="saveAirtable()">Save Airtable Config</button>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">EmailJS (keys stored in Vercel env vars)</div>
+    <p style="font-size:12px;color:var(--ink2);margin-bottom:12px;">Store <code>EMAILJS_SERVICE_ID</code>, <code>EMAILJS_PUBLIC_KEY</code>, <code>EMAILJS_PRIVATE_KEY</code> in Vercel → Settings → Environment Variables. Only template IDs are stored here.</p>
+    <div class="form-row">
+      <div class="fg"><label class="lbl">Student Template ID</label><input class="inp" id="ejs-stu" placeholder="template_student_confirm" /></div>
+      <div class="fg"><label class="lbl">Panelist Template ID</label><input class="inp" id="ejs-pan" placeholder="template_panelist_notify" /></div>
+    </div>
+    <button class="btn btn-green" onclick="saveEmailJS()">Save Template IDs</button>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">Admin Password</div>
+    <div class="form-row">
+      <div class="fg"><label class="lbl">New Password</label><input class="inp" type="password" id="new-pw" /></div>
+      <div class="fg"><label class="lbl">Confirm</label><input class="inp" type="password" id="conf-pw" /></div>
+      <div class="fg" style="justify-content:flex-end;"><button class="btn btn-green" onclick="changePw()">Update</button></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- main -->
+</div><!-- shell -->
+</div><!-- app -->
+
+<!-- MODAL: Add panelist to instance -->
+<div class="modal-bg" id="modal-add-panelist">
+  <div class="modal">
+    <h3>Add Panelist to Panel</h3>
+    <div class="modal-form">
+      <div><label class="lbl">Select Panelist</label><select class="inp" id="m-add-pl"></select></div>
+      <input type="hidden" id="m-add-instance-id" />
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal('modal-add-panelist')">Cancel</button>
+      <button class="btn btn-green" onclick="addPanelistToInstance()">Add to Panel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/lib/store.js"></script>
+<script>
+// ── Nav ────────────────────────────────────────────────────
+function nav(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  const renders = {
+    dashboard: renderDashboard,
+    'time-blocks': renderTimeBlocks,
+    panels: renderPanels,
+    panelists: renderPanelists,
+    students: renderStudents,
+    bookings: renderBookings,
+    itinerary: renderItinerary,
+    zoom: renderZoom,
+    email: renderEmail,
+    report: renderReport,
+    log: renderLog,
+    settings: renderSettings,
+  };
+  renders[id] && renders[id]();
+}
+
+// ── Login ──────────────────────────────────────────────────
+function adminLogin() {
+  const pw = document.getElementById('a-pw').value;
+  const st = STORE.get();
+  if (pw === st.adminPassword) {
+    document.getElementById('pg-login').style.display = 'none';
+    document.getElementById('pg-app').style.display = 'block';
+    document.getElementById('a-pw').value = '';
+    renderDashboard();
+    STORE.log('admin','Admin signed in');
+  } else {
+    const e = document.getElementById('a-err');
+    e.textContent = 'Incorrect password.'; e.style.display='block';
+  }
+}
+function logout() {
+  document.getElementById('pg-app').style.display='none';
+  document.getElementById('pg-login').style.display='flex';
+}
+
+// ── Dashboard ──────────────────────────────────────────────
+function renderDashboard() {
+  const st = STORE.get();
+  const totalPanelists = st.panelists.length;
+  const totalStudents  = st.studentEmails.length;
+  const totalBookings  = st.bookings.length;
+  const openSlots = st.panelInstances.reduce((a,i) => a + i.studentSlots.filter(s=>!s.studentEmail).length, 0);
+  const forming = st.panelInstances.filter(i => i.panelistIds.length < 2).length;
+  const ready   = st.panelInstances.filter(i => i.status === 'ready').length;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat"><div class="stat-lbl">Panelists</div><div class="stat-val">${totalPanelists}</div></div>
+    <div class="stat"><div class="stat-lbl">Students</div><div class="stat-val">${totalStudents}</div></div>
+    <div class="stat"><div class="stat-lbl">Bookings</div><div class="stat-val">${totalBookings}</div></div>
+    <div class="stat"><div class="stat-lbl">Open Slots</div><div class="stat-val">${openSlots}</div></div>
+    <div class="stat"><div class="stat-lbl">Panels Ready</div><div class="stat-val">${ready}</div></div>
+    <div class="stat"><div class="stat-lbl">Forming</div><div class="stat-val">${forming}</div><div class="stat-sub">need more panelists</div></div>`;
+
+  // Mini instances
+  const instEl = document.getElementById('dash-instances');
+  const topInst = st.panelInstances.slice(0,6);
+  if (!topInst.length) { instEl.innerHTML='<p style="font-size:13px;color:var(--ink3);">No panel instances yet.</p>'; }
+  else instEl.innerHTML = topInst.map(i => {
+    const blk = st.timeBlocks.find(b=>b.id===i.timeBlockId);
+    const open = i.studentSlots.filter(s=>!s.studentEmail).length;
+    const cls = i.status==='ready'?'b-green':i.status==='forming'?'b-amber':'b-gray';
+    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <span>${blk?.label || i.label}</span>
+      <span><span class="badge ${cls}">${i.status}</span> <span style="color:var(--ink3);margin-left:8px;">${open} open</span></span>
+    </div>`;
+  }).join('');
+
+  // Mini log
+  const logEl = document.getElementById('dash-log');
+  logEl.innerHTML = st.activityLog.slice(0,6).map(l => `
+    <div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;">
+      <div class="log-dot ${l.type}" style="width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0;background:${l.type==='booking'?'var(--green)':l.type==='panel'?'var(--blue)':l.type==='availability'?'var(--amber)':'var(--ink3)'}"></div>
+      <div style="flex:1;"><div>${l.message}</div><div style="color:var(--ink3);font-size:11px;margin-top:2px;">${fmtTs(l.ts)}</div></div>
+    </div>`).join('') || '<p style="font-size:13px;color:var(--ink3);">No activity yet.</p>';
+}
+
+// ── Time Blocks ────────────────────────────────────────────
+const SHIFT_DEFS = {
+  morning:       { label:'Weekday Morning', startTime:'08:00', endTime:'10:00', shiftLabel:'Morning Shift' },
+  evening:       { label:'Weekday Evening', startTime:'17:00', endTime:'19:30', shiftLabel:'Evening Shift' },
+  'sat-morning': { label:'Saturday Morning', startTime:'09:00', endTime:'12:00', shiftLabel:'Sat Morning' },
+  'sat-afternoon':{ label:'Saturday Afternoon', startTime:'14:00', endTime:'17:00', shiftLabel:'Sat Afternoon' },
+};
+
+function addTimeBlock() {
+  const date  = document.getElementById('tb-date').value;
+  const shift = document.getElementById('tb-shift').value;
+  if (!date) { toast('Pick a date.','bad'); return; }
+  const st = STORE.get();
+  if (st.timeBlocks.find(b=>b.date===date&&b.shift===shift)) { toast('This block already exists.','bad'); return; }
+  const def = SHIFT_DEFS[shift];
+  st.timeBlocks.push({ id: STORE.uid(), date, shift, label: `${def.shiftLabel} · ${fmtDate(date)}`, startTime: def.startTime, endTime: def.endTime, shiftLabel: def.shiftLabel });
+  STORE.save();
+  STORE.log('admin', `Time block added: ${def.shiftLabel} on ${date}`);
+  renderTimeBlocks();
+  toast('Time block added.','ok');
+}
+
+function renderTimeBlocks() {
+  const st = STORE.get();
+  const sorted = [...st.timeBlocks].sort((a,b)=>a.date.localeCompare(b.date)||a.startTime.localeCompare(b.startTime));
+  document.getElementById('tb-tbody').innerHTML = sorted.map(blk => {
+    const pCount = st.availability.filter(a=>a.timeBlockId===blk.id).length;
+    const iCount = st.panelInstances.filter(i=>i.timeBlockId===blk.id).length;
+    const d = new Date(blk.date+'T00:00:00');
+    const day = d.toLocaleDateString('en-GB',{weekday:'long'});
+    return `<tr>
+      <td style="font-weight:600;">${fmtDate(blk.date)}</td>
+      <td>${day}</td>
+      <td><span class="badge ${blk.shift==='morning'?'b-amber':blk.shift==='evening'?'b-blue':'b-green'}">${blk.shiftLabel}</span></td>
+      <td style="color:var(--ink2);">${blk.startTime}–${blk.endTime}</td>
+      <td>${pCount} panelist${pCount!==1?'s':''}</td>
+      <td>${iCount} instance${iCount!==1?'s':''}</td>
+      <td><button class="btn btn-red btn-sm" onclick="deleteBlock('${blk.id}')">Delete</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:20px;">No time blocks yet.</td></tr>';
+}
+
+function deleteBlock(id) {
+  const st = STORE.get();
+  if (st.panelInstances.some(i=>i.timeBlockId===id&&i.studentSlots.some(s=>s.studentEmail))) { toast('Cannot delete — has bookings.','bad'); return; }
+  st.timeBlocks = st.timeBlocks.filter(b=>b.id!==id);
+  st.availability = st.availability.filter(a=>a.timeBlockId!==id);
+  st.panelInstances = st.panelInstances.filter(i=>i.timeBlockId!==id);
+  STORE.save();
+  renderTimeBlocks();
+  toast('Block deleted.','ok');
+}
+
+// ── Panels ─────────────────────────────────────────────────
+let panelTabFilter = 'all';
+function panelTab(f, el) {
+  panelTabFilter = f;
+  document.querySelectorAll('#sec-panels .tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderPanels();
+}
+
+function renderPanels() {
+  const st = STORE.get();
+  let instances = st.panelInstances;
+  if (panelTabFilter !== 'all') instances = instances.filter(i=>i.status===panelTabFilter);
+
+  const grid = document.getElementById('instances-grid');
+  if (!instances.length) { grid.innerHTML='<p style="font-size:13px;color:var(--ink3);grid-column:1/-1;">No panel instances match.</p>'; return; }
+
+  grid.innerHTML = instances.map(inst => {
+    const blk = st.timeBlocks.find(b=>b.id===inst.timeBlockId);
+    const panelists = inst.panelistIds.map(pid=>st.panelists.find(p=>p.id===pid)).filter(Boolean);
+    const open = inst.studentSlots.filter(s=>!s.studentEmail).length;
+    const total = inst.studentSlots.length;
+    const statusBadge = inst.status==='ready'?'b-green':inst.status==='forming'?'b-amber':inst.status==='active'?'b-blue':'b-gray';
+    const needsMore = panelists.length < 2;
+    return `<div class="inst-card ${inst.status}">
+      <div class="inst-header">
+        <div><div class="inst-title">${blk?.shiftLabel||'?'} · ${blk?fmtDate(blk.date):''}</div><div class="inst-sub">${blk?.startTime}–${blk?.endTime} · ${total} student slots</div></div>
+        <span class="badge ${statusBadge}">${inst.status}</span>
+      </div>
+      <div class="inst-panelists">
+        ${panelists.map(p=>`<div class="inst-panelist"><div class="av">${initials(p.name)}</div><span>${p.name}</span></div>`).join('')}
+        ${needsMore ? `<div class="inst-panelist"><div class="av empty">+</div><span style="color:var(--ink3);">Needs ${2-panelists.length} more panelist${2-panelists.length!==1?'s':''}</span></div>` : ''}
+      </div>
+      <div class="inst-slots">${open} open · ${total-open} booked · ${total} total slots</div>
+      <div class="inst-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openAddToPanel('${inst.id}')">+ Add Panelist</button>
+        ${inst.status!=='completed'?`<button class="btn btn-ghost btn-sm" onclick="markComplete('${inst.id}')">Mark Done</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAddToPanel(instanceId) {
+  const st = STORE.get();
+  const inst = st.panelInstances.find(i=>i.id===instanceId);
+  if (!inst) return;
+  document.getElementById('m-add-instance-id').value = instanceId;
+  const sel = document.getElementById('m-add-pl');
+  const existing = inst.panelistIds;
+  const eligible = st.panelists.filter(p=>!existing.includes(p.id));
+  sel.innerHTML = eligible.map(p=>`<option value="${p.id}">${p.name} (${p.email})</option>`).join('');
+  if (!eligible.length) { toast('No more panelists to add.','bad'); return; }
+  document.getElementById('modal-add-panelist').classList.add('open');
+}
+
+function addPanelistToInstance() {
+  const instanceId = document.getElementById('m-add-instance-id').value;
+  const panelistId = document.getElementById('m-add-pl').value;
+  if (!instanceId || !panelistId) return;
+  const st = STORE.get();
+  const inst = st.panelInstances.find(i=>i.id===instanceId);
+  if (!inst || inst.panelistIds.includes(panelistId)) return;
+  if (inst.panelistIds.length >= 3) { toast('Panel already has 3 panelists (max).','bad'); return; }
+  inst.panelistIds.push(panelistId);
+  if (inst.panelistIds.length >= 2) inst.status = 'ready';
+  STORE.save();
+  const p = st.panelists.find(x=>x.id===panelistId);
+  STORE.log('admin',`Manually added ${p?.name} to panel instance`);
+  closeModal('modal-add-panelist');
+  renderPanels();
+  toast('Panelist added to panel.','ok');
+}
+
+function markComplete(id) {
+  const st = STORE.get();
+  const inst = st.panelInstances.find(i=>i.id===id);
+  if (inst) { inst.status='completed'; STORE.save(); renderPanels(); toast('Marked as completed.','ok'); }
+}
+
+// ── Panelists ──────────────────────────────────────────────
+let panelistImportMode = 'single';
+function panelistImportTab(mode, el) {
+  panelistImportMode = mode;
+  document.querySelectorAll('#sec-panelists .tabs .tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pl-tab-single').style.display = mode==='single'?'block':'none';
+  document.getElementById('pl-tab-bulk').style.display  = mode==='bulk'?'block':'none';
+}
+
+function addPanelist() {
+  const name  = document.getElementById('pl-name').value.trim();
+  const email = document.getElementById('pl-email').value.trim().toLowerCase();
+  const dept  = document.getElementById('pl-dept').value.trim();
+  if (!name||!email) { toast('Name and email required.','bad'); return; }
+  const st = STORE.get();
+  if (st.panelists.find(p=>p.email===email)) { toast('Email already registered.','bad'); return; }
+  st.panelists.push({ id:STORE.uid(), name, email, dept });
+  STORE.save();
+  STORE.log('admin',`Panelist added: ${name}`);
+  document.getElementById('pl-name').value=''; document.getElementById('pl-email').value=''; document.getElementById('pl-dept').value='';
+  renderPanelists();
+  toast('Panelist added.','ok');
+}
+
+function importPanelistCSV(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const lines = ev.target.result.split('\n').map(l=>l.trim()).filter(Boolean);
+    const header = lines[0].toLowerCase().split(',').map(h=>h.trim());
+    const ni = header.findIndex(h=>h.includes('name'));
+    const ei = header.findIndex(h=>h.includes('email'));
+    const di = header.findIndex(h=>h.includes('dept'));
+    if (ei===-1) { toast('CSV needs an email column.','bad'); return; }
+    const st = STORE.get();
+    let added = 0;
+    for (const line of lines.slice(1)) {
+      const cols = line.split(',').map(c=>c.trim().replace(/^"|"$/g,''));
+      const email = cols[ei]?.toLowerCase();
+      if (!email||!email.includes('@')) continue;
+      if (st.panelists.find(p=>p.email===email)) continue;
+      st.panelists.push({ id:STORE.uid(), name: ni>=0?cols[ni]:email.split('@')[0], email, dept: di>=0?cols[di]:'' });
+      added++;
+    }
+    STORE.save(); renderPanelists(); toast(`${added} panelists imported.`,'ok');
+    e.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+function renderPanelists() {
+  const st = STORE.get();
+  const q = (document.getElementById('pl-search')?.value||'').toLowerCase();
+  const filtered = st.panelists.filter(p=>p.name.toLowerCase().includes(q)||p.email.includes(q));
+  document.getElementById('pl-tbody').innerHTML = filtered.map(p => {
+    const blockCount = st.availability.filter(a=>a.panelistId===p.id).length;
+    const panelCount = st.panelInstances.filter(i=>i.panelistIds.includes(p.id)).length;
+    return `<tr>
+      <td style="font-weight:600;">${p.name}</td>
+      <td style="color:var(--ink2);">${p.email}</td>
+      <td style="color:var(--ink3);">${p.dept||'—'}</td>
+      <td>${blockCount}</td>
+      <td>${panelCount}</td>
+      <td><button class="btn btn-red btn-sm" onclick="deletePanelist('${p.id}')">Remove</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:16px;">No panelists yet.</td></tr>';
+}
+
+function deletePanelist(id) {
+  const st = STORE.get();
+  st.panelists = st.panelists.filter(p=>p.id!==id);
+  st.availability = st.availability.filter(a=>a.panelistId!==id);
+  st.panelInstances.forEach(i=>{ i.panelistIds = i.panelistIds.filter(pid=>pid!==id); });
+  STORE.save(); STORE.rebuildPanelInstances(); renderPanelists(); toast('Panelist removed.','ok');
+}
+
+// ── Students ───────────────────────────────────────────────
+function stuTab(t, el) {
+  ['single','bulk','csv'].forEach(x=>document.getElementById('stu-tab-'+x).style.display=x===t?'block':'none');
+  document.querySelectorAll('#sec-students .tabs .tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function addStudent() {
+  const name=document.getElementById('stu-name').value.trim(), email=document.getElementById('stu-email').value.trim().toLowerCase();
+  if (!email||!email.includes('@')) { toast('Valid email required.','bad'); return; }
+  const st=STORE.get();
+  if (st.studentEmails.find(s=>s.email===email)) { toast('Email already exists.','bad'); return; }
+  st.studentEmails.push({name:name||email.split('@')[0],email,bookedInstanceId:null,bookedSlotIndex:null});
+  STORE.save(); document.getElementById('stu-name').value=''; document.getElementById('stu-email').value='';
+  renderStudents(); toast('Student added.','ok');
+}
+function addBulkStudents() {
+  const raw=document.getElementById('stu-bulk').value;
+  const lines=raw.split(/[\n,]+/).map(l=>l.trim()).filter(Boolean);
+  const st=STORE.get(); let added=0;
+  lines.forEach(line=>{
+    const m=line.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i); if(!m) return;
+    const email=m[0].toLowerCase();
+    if(st.studentEmails.find(s=>s.email===email)) return;
+    const name=line.replace(m[0],'').replace(/[<>,"]/g,'').trim()||email.split('@')[0];
+    st.studentEmails.push({name,email,bookedInstanceId:null,bookedSlotIndex:null}); added++;
+  });
+  STORE.save(); renderStudents(); document.getElementById('stu-bulk').value='';
+  toast(`${added} students added.`,'ok');
+}
+function importStudentCSV(e) {
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const lines=ev.target.result.split('\n').map(l=>l.trim()).filter(Boolean);
+    const h=lines[0].toLowerCase().split(',').map(x=>x.trim());
+    const ni=h.findIndex(x=>x.includes('name')), ei=h.findIndex(x=>x.includes('email'));
+    if(ei===-1){toast('CSV needs email column.','bad');return;}
+    const st=STORE.get(); let added=0;
+    for(const line of lines.slice(1)){
+      const cols=line.split(',').map(c=>c.trim().replace(/^"|"$/g,''));
+      const email=cols[ei]?.toLowerCase(); if(!email||!email.includes('@')) continue;
+      if(st.studentEmails.find(s=>s.email===email)) continue;
+      st.studentEmails.push({name:ni>=0?cols[ni]:email.split('@')[0],email,bookedInstanceId:null,bookedSlotIndex:null}); added++;
+    }
+    STORE.save(); renderStudents(); toast(`${added} students imported.`,'ok'); e.target.value='';
+  };
+  reader.readAsText(file);
+}
+function clearStudents() {
+  if(!confirm('Remove all unbooked students?')) return;
+  const st=STORE.get();
+  st.studentEmails=st.studentEmails.filter(s=>s.bookedInstanceId);
+  STORE.save(); renderStudents(); toast('Cleared unbooked students.','ok');
+}
+function renderStudents() {
+  const st=STORE.get();
+  const q=(document.getElementById('stu-search')?.value||'').toLowerCase();
+  const filtered=st.studentEmails.filter(s=>s.name.toLowerCase().includes(q)||s.email.includes(q));
+  document.getElementById('stu-tbody').innerHTML=filtered.map(s=>{
+    const bk=st.bookings.find(b=>b.studentEmail===s.email);
+    return `<tr>
+      <td style="font-weight:500;">${s.name}</td>
+      <td style="color:var(--ink2);">${s.email}</td>
+      <td><span class="badge ${s.bookedInstanceId?'b-green':'b-gray'}">${s.bookedInstanceId?'Booked':'Pending'}</span></td>
+      <td>${bk?bk.panelLabel:'—'}</td>
+      <td><button class="btn btn-red btn-sm" onclick="removeStudent('${s.email}')">Remove</button></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:16px;">No students yet.</td></tr>';
+}
+function removeStudent(email) {
+  const st=STORE.get();
+  st.studentEmails=st.studentEmails.filter(s=>s.email!==email);
+  STORE.save(); renderStudents(); toast('Student removed.','ok');
+}
+
+// ── Bookings ───────────────────────────────────────────────
+function renderBookings() {
+  const st=STORE.get();
+  const total=st.bookings.length;
+  const panelSet=new Set(st.bookings.map(b=>b.instanceId));
+  const open=st.panelInstances.reduce((a,i)=>a+i.studentSlots.filter(s=>!s.studentEmail).length,0);
+  document.getElementById('bk-stats').innerHTML=`
+    <div class="stat"><div class="stat-lbl">Total Booked</div><div class="stat-val">${total}</div></div>
+    <div class="stat"><div class="stat-lbl">Panels Active</div><div class="stat-val">${panelSet.size}</div></div>
+    <div class="stat"><div class="stat-lbl">Open Slots</div><div class="stat-val">${open}</div></div>`;
+
+  // Populate manual assignment dropdowns
+  const instSel=document.getElementById('ma-instance');
+  instSel.innerHTML='<option value="">Select panel…</option>'+
+    st.panelInstances.filter(i=>i.status!=='completed').map(i=>{
+      const blk=st.timeBlocks.find(b=>b.id===i.timeBlockId);
+      return `<option value="${i.id}">${blk?.shiftLabel||''} ${blk?fmtDate(blk.date):''}</option>`;
+    }).join('');
+
+  document.getElementById('bk-tbody').innerHTML=st.bookings.length?
+    [...st.bookings].sort((a,b)=>a.date.localeCompare(b.date)||a.slotTime.localeCompare(b.slotTime)).map(b=>`<tr>
+      <td style="font-weight:500;">${b.studentName}</td>
+      <td style="color:var(--ink2);">${b.studentEmail}</td>
+      <td>${fmtDate(b.date)}</td>
+      <td style="font-weight:600;color:var(--green);">${STORE.formatTime(b.slotTime)}</td>
+      <td><span class="badge b-green">${b.panelLabel}</span></td>
+      <td style="font-size:11px;color:var(--ink3);">${fmtTs(b.bookedAt)}</td>
+    </tr>`).join(''):
+    '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px;">No bookings yet.</td></tr>';
+}
+
+document.getElementById('ma-instance').addEventListener('change', function() {
+  const instId=this.value;
+  const st=STORE.get();
+  const inst=st.panelInstances.find(i=>i.id===instId);
+  const slotSel=document.getElementById('ma-slot');
+  slotSel.innerHTML='<option value="">Select slot…</option>';
+  if(inst) {
+    inst.studentSlots.filter(s=>!s.studentEmail).forEach(s=>{
+      slotSel.innerHTML+=`<option value="${s.slotIndex}">${STORE.formatTime(s.startTime)}</option>`;
+    });
+  }
+});
+
+function manualAssign() {
+  const email=document.getElementById('ma-email').value.trim().toLowerCase();
+  const instId=document.getElementById('ma-instance').value;
+  const slotIdx=parseInt(document.getElementById('ma-slot').value);
+  if(!email||!instId||isNaN(slotIdx)) { toast('Fill all fields.','bad'); return; }
+  const st=STORE.get();
+  if(!st.studentEmails.find(s=>s.email===email)) { toast('Student email not in database.','bad'); return; }
+  const booking=STORE.bookSlot(email,instId,slotIdx);
+  if(!booking) { toast('Could not assign — slot may be taken.','bad'); return; }
+  STORE.log('admin',`Manually assigned ${email} to panel instance`);
+  renderBookings(); toast('Student manually assigned.','ok');
+}
+
+function exportBookings() {
+  const st=STORE.get();
+  if(!st.bookings.length){toast('No bookings to export.','bad');return;}
+  const rows=[['Student Name','Email','Date','Time','Panel','Shift','Booked At'],...st.bookings.map(b=>[b.studentName,b.studentEmail,b.date,b.slotTime,b.panelLabel,b.shift||'',b.bookedAt])];
+  downloadCSV(rows,'bookings_'+today()+'.csv');
+}
+
+// ── Itinerary ──────────────────────────────────────────────
+function renderItinerary() {
+  const st=STORE.get();
+  const body=document.getElementById('itinerary-body');
+  if(!st.panelInstances.length){body.innerHTML='<p style="color:var(--ink3);font-size:13px;">No panel instances formed yet.</p>';return;}
+  const sorted=[...st.panelInstances].sort((a,b)=>{
+    const ba=st.timeBlocks.find(x=>x.id===a.timeBlockId);
+    const bb=st.timeBlocks.find(x=>x.id===b.timeBlockId);
+    return (ba?.date||'').localeCompare(bb?.date||'')||(ba?.startTime||'').localeCompare(bb?.startTime||'');
+  });
+  body.innerHTML=sorted.map(inst=>{
+    const blk=st.timeBlocks.find(b=>b.id===inst.timeBlockId);
+    const panelists=inst.panelistIds.map(pid=>st.panelists.find(p=>p.id===pid)).filter(Boolean);
+    const slots=inst.studentSlots;
+    return `<div class="itinerary-block">
+      <div class="itin-head">
+        ${blk?`${blk.shiftLabel} · ${fmtDate(blk.date)} · ${blk.startTime}–${blk.endTime}`:'Unknown Block'}
+        · ${panelists.map(p=>p.name).join(', ')||'No panelists'}
+        · <span style="opacity:.6;font-weight:400;">${inst.status}</span>
+      </div>
+      ${slots.map((s,idx)=>{
+        const bk=st.bookings.find(b=>b.instanceId===inst.id&&b.slotIndex===s.slotIndex);
+        const isBreak=st.config.midBreakAfterStudent>0&&idx>0&&idx%st.config.midBreakAfterStudent===0;
+        return (isBreak?`<div class="itin-slot"><span class="itin-time">${STORE.formatTime(s.startTime)}</span><span class="itin-break">☕ Break (${st.config.midBreakMins} min)</span></div>`:'')
+          +`<div class="itin-slot">
+          <span class="itin-time">${STORE.formatTime(s.startTime)}</span>
+          <span class="itin-student">${s.studentEmail?`<strong>${bk?.studentName||s.studentEmail}</strong> · ${s.studentEmail}`:'<span style="color:var(--ink3);">Open slot</span>'}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function exportItinerary() { window.print(); }
+function exportItineraryCSV() {
+  const st=STORE.get();
+  const rows=[['Date','Shift','Start Time','End Time','Panelists','Slot Time','Student Name','Student Email','Status']];
+  for(const inst of st.panelInstances){
+    const blk=st.timeBlocks.find(b=>b.id===inst.timeBlockId);
+    const panelists=inst.panelistIds.map(pid=>st.panelists.find(p=>p.id===pid)?.name||'').filter(Boolean).join('; ');
+    for(const s of inst.studentSlots){
+      const bk=st.bookings.find(b=>b.instanceId===inst.id&&b.slotIndex===s.slotIndex);
+      rows.push([blk?.date||'',blk?.shiftLabel||'',blk?.startTime||'',blk?.endTime||'',panelists,s.startTime,bk?.studentName||'',s.studentEmail||'',s.studentEmail?'Booked':'Open']);
+    }
+  }
+  downloadCSV(rows,'itinerary_'+today()+'.csv');
+}
+
+// ── Zoom ───────────────────────────────────────────────────
+function renderZoom() {
+  const st=STORE.get();
+  const c=document.getElementById('zoom-cards');
+  c.innerHTML=st.config.zoomLinks.map((z,i)=>`
+    <div class="zoom-card">
+      <h4>Zoom Room ${String.fromCharCode(65+i)} — Used for concurrent panel ${i+1}</h4>
+      <div class="zoom-row">
+        <div class="fg"><label class="lbl">Meeting URL</label><input class="inp" id="z-url-${i}" value="${z.url||''}" placeholder="https://zoom.us/j/…" /></div>
+        <div class="fg"><label class="lbl">Meeting ID</label><input class="inp" id="z-mid-${i}" value="${z.meetingId||''}" placeholder="123 456 7890" /></div>
+        <div class="fg"><label class="lbl">Passcode</label><input class="inp" id="z-pass-${i}" value="${z.passcode||''}" placeholder="abc123" /></div>
+      </div>
+    </div>`).join('');
+}
+
+function saveZoom() {
+  const st=STORE.get();
+  st.config.zoomLinks=st.config.zoomLinks.map((_,i)=>({
+    label:`Link ${String.fromCharCode(65+i)}`,
+    url:document.getElementById(`z-url-${i}`)?.value.trim()||'',
+    meetingId:document.getElementById(`z-mid-${i}`)?.value.trim()||'',
+    passcode:document.getElementById(`z-pass-${i}`)?.value.trim()||'',
+  }));
+  STORE.save(); STORE.log('admin','Zoom links updated'); toast('Zoom links saved.','ok');
+}
+
+// ── Email ──────────────────────────────────────────────────
+function renderEmail() {
+  updateEmailRecipients();
+}
+function updateEmailRecipients() {
+  const type=document.getElementById('em-type').value;
+  const sel=document.getElementById('em-recipient');
+  const st=STORE.get();
+  if(type==='student') {
+    sel.innerHTML=st.studentEmails.map(s=>`<option value="${s.email}">${s.name} (${s.email})</option>`).join('')||'<option>No students</option>';
+  } else {
+    sel.innerHTML=st.panelInstances.map(i=>{
+      const blk=st.timeBlocks.find(b=>b.id===i.timeBlockId);
+      return `<option value="${i.id}">${blk?.shiftLabel||''} ${blk?fmtDate(blk.date):''}</option>`;
+    }).join('')||'<option>No instances</option>';
+  }
+  previewEmail();
+}
+
+function previewEmail() {
+  const type=document.getElementById('em-type').value;
+  const val=document.getElementById('em-recipient').value;
+  const st=STORE.get();
+  let html='';
+  if(type==='student') {
+    const s=st.studentEmails.find(x=>x.email===val);
+    const bk=st.bookings.find(b=>b.studentEmail===val);
+    html=s?`<strong>To:</strong> ${s.name} &lt;${s.email}&gt;<br><strong>Booking:</strong> ${bk?`${fmtDate(bk.date)} ${STORE.formatTime(bk.slotTime)} · ${bk.panelLabel}`:'No booking yet'}`:'No student selected.';
+  } else {
+    const inst=st.panelInstances.find(i=>i.id===val);
+    const blk=inst?st.timeBlocks.find(b=>b.id===inst.timeBlockId):null;
+    const pls=inst?inst.panelistIds.map(pid=>st.panelists.find(p=>p.id===pid)).filter(Boolean):[];
+    html=inst?`<strong>To:</strong> ${pls.map(p=>p.name).join(', ')}<br><strong>Block:</strong> ${blk?.shiftLabel} ${blk?fmtDate(blk.date):''}`:''
+  }
+  document.getElementById('em-preview').innerHTML=html||'No selection.';
+}
+
+async function sendManualEmail() {
+  const type=document.getElementById('em-type').value;
+  const val=document.getElementById('em-recipient').value;
+  const tplType=document.getElementById('em-tpl').value;
+  const st=STORE.get();
+  const zoom=st.config.zoomLinks.find(z=>z.url)||{};
+
+  if(type==='student') {
+    const s=st.studentEmails.find(x=>x.email===val);
+    const bk=st.bookings.find(b=>b.studentEmail===val);
+    if(!s){toast('Student not found.','bad');return;}
+    const tpl=st.emailjs.studentTpl; if(!tpl){toast('Student template ID not set in Settings.','bad');return;}
+    await fetch('/api/email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({templateId:tpl,params:{
+      to_email:s.email,to_name:s.name,
+      interview_date:bk?fmtDate(bk.date):'TBC',interview_time:bk?STORE.formatTime(bk.slotTime):'TBC',
+      panel_label:bk?.panelLabel||'TBC',zoom_url:zoom.url||'TBC',zoom_meeting_id:zoom.meetingId||'',zoom_passcode:zoom.passcode||'',
+    }})});
+    STORE.log('admin',`Manual email sent to student ${s.email}`, {to: s.email, type:'email'});
+    toast(`Email sent to ${s.name}.`,'ok');
+  } else {
+    const inst=st.panelInstances.find(i=>i.id===val);
+    const blk=inst?st.timeBlocks.find(b=>b.id===inst.timeBlockId):null;
+    if(!inst){toast('Panel instance not found.','bad');return;}
+    const tpl=st.emailjs.panelistTpl; if(!tpl){toast('Panelist template ID not set in Settings.','bad');return;}
+    const pls=inst.panelistIds.map(pid=>st.panelists.find(p=>p.id===pid)).filter(Boolean);
+    const co=pls.map(p=>`${p.name} (${p.email})`).join(', ');
+    for(const p of pls){
+      await fetch('/api/email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({templateId:tpl,params:{
+        to_email:p.email,to_name:p.name,student_name:'See Airtable',student_email:'',
+        interview_date:blk?fmtDate(blk.date):'TBC',interview_time:blk?`${blk.startTime}–${blk.endTime}`:'TBC',
+        panel_label:inst.label,co_panelists:co,zoom_url:zoom.url||'TBC',zoom_meeting_id:zoom.meetingId||'',zoom_passcode:zoom.passcode||'',
+      }})});
+    }
+    STORE.log('email',`Panel notification sent to ${pls.length} panelist${pls.length!==1?'s':''} for ${inst.label}`, {to: pls.map(p=>p.email).join(', '), type:'email'});
+    toast(`Emails sent to ${pls.length} panelist${pls.length!==1?'s':''}.`,'ok');
+  }
+}
+
+// ── Report ─────────────────────────────────────────────────
+function renderReport() {
+  const st = STORE.get();
+  const body = document.getElementById('report-body');
+  if (!st.panelists.length) { body.innerHTML='<p style="font-size:13px;color:var(--ink3);">No panelists registered yet.</p>'; return; }
+
+  // Build per-panelist summary
+  const rows = st.panelists.map(p => {
+    const instances = st.panelInstances.filter(i => i.panelistIds.includes(p.id));
+    const sessions = instances.map(inst => {
+      const blk = st.timeBlocks.find(b => b.id === inst.timeBlockId);
+      const studentsInst = inst.studentSlots.filter(s => s.studentEmail);
+      const bks = st.bookings.filter(b => b.instanceId === inst.id);
+      const panelLabel = bks[0]?.panelLabel || inst.label;
+      return { blk, inst, studentsInst, bks, panelLabel };
+    }).filter(s => s.blk);
+    const totalStudents = sessions.reduce((a, s) => a + s.studentsInst.length, 0);
+    return { p, sessions, totalStudents };
+  });
+
+  body.innerHTML = rows.map(({ p, sessions, totalStudents }) => `
+    <div class="card" style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">${initials(p.name)}</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;font-size:15px;">${p.name}</div>
+          <div style="font-size:12px;color:var(--ink3);">${p.email}${p.dept ? ' · ' + p.dept : ''}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Playfair Display',serif;font-size:24px;color:var(--green);">${sessions.length}</div>
+          <div style="font-size:11px;color:var(--ink3);">panel session${sessions.length !== 1 ? 's' : ''}</div>
+        </div>
+        <div style="text-align:right;margin-left:20px;">
+          <div style="font-family:'Playfair Display',serif;font-size:24px;">${totalStudents}</div>
+          <div style="font-size:11px;color:var(--ink3);">student${totalStudents !== 1 ? 's' : ''} interviewed</div>
+        </div>
+      </div>
+      ${sessions.length === 0
+        ? '<p style="font-size:13px;color:var(--ink3);">No panel sessions yet.</p>'
+        : `<div class="tbl-wrap"><table>
+            <thead><tr><th>Date</th><th>Shift</th><th>Panel Label</th><th>Co-Panelists</th><th>Students Interviewed</th></tr></thead>
+            <tbody>
+              ${sessions.map(({ blk, inst, bks, panelLabel }) => {
+                const coNames = inst.panelistIds
+                  .filter(pid => pid !== p.id)
+                  .map(pid => st.panelists.find(x => x.id === pid)?.name || '?')
+                  .join(', ') || '—';
+                const studentList = bks.map(b => b.studentName).join(', ') || 'None booked yet';
+                return `<tr>
+                  <td style="font-weight:600;">${fmtDate(blk.date)}</td>
+                  <td>${blk.shiftLabel}</td>
+                  <td><span class="badge b-green">${panelLabel}</span></td>
+                  <td style="color:var(--ink2);">${coNames}</td>
+                  <td>${studentList}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table></div>`
+      }
+    </div>`).join('');
+}
+
+function exportReportCSV() {
+  const st = STORE.get();
+  const rows = [['Panelist Name','Email','Department','Date','Shift','Panel Label','Co-Panelists','Students Interviewed','Student Emails']];
+  for (const p of st.panelists) {
+    const instances = st.panelInstances.filter(i => i.panelistIds.includes(p.id));
+    if (!instances.length) {
+      rows.push([p.name, p.email, p.dept||'', '', '', '', '', '', '']);
+    } else {
+      for (const inst of instances) {
+        const blk = st.timeBlocks.find(b => b.id === inst.timeBlockId);
+        const bks = st.bookings.filter(b => b.instanceId === inst.id);
+        const coNames = inst.panelistIds.filter(pid=>pid!==p.id).map(pid=>st.panelists.find(x=>x.id===pid)?.name||'').join('; ');
+        rows.push([
+          p.name, p.email, p.dept||'',
+          blk?.date||'', blk?.shiftLabel||'',
+          bks[0]?.panelLabel||inst.label,
+          coNames,
+          bks.map(b=>b.studentName).join('; '),
+          bks.map(b=>b.studentEmail).join('; '),
+        ]);
+      }
+    }
+  }
+  downloadCSV(rows, 'panelist_report_' + today() + '.csv');
+}
+
+// ── Log ────────────────────────────────────────────────────
+function renderLog() {
+  const st = STORE.get();
+  const icons = { booking:'🟢', panel:'🔵', availability:'🟡', admin:'⚪', email:'📧' };
+  const log = document.getElementById('log-list');
+  log.innerHTML = st.activityLog.map(l => `
+    <div class="log-item">
+      <div class="log-dot ${l.type}" style="background:${l.type==='booking'?'var(--green)':l.type==='panel'?'var(--blue)':l.type==='email'?'var(--amber)':l.type==='availability'?'#F59E0B':'var(--ink3)'}"></div>
+      <div style="flex:1;">
+        <div class="log-msg">${icons[l.type]||'○'} ${l.message}</div>
+        <div class="log-time">${fmtTs(l.ts)}${l.meta?.to ? ' → ' + l.meta.to : ''}</div>
+      </div>
+    </div>`).join('') || '<p style="font-size:13px;color:var(--ink3);">No activity yet.</p>';
+}
+function clearLog() { const st=STORE.get(); st.activityLog=[]; STORE.save(); renderLog(); }
+
+
+// ── Settings ───────────────────────────────────────────────
+function renderSettings() {
+  const st=STORE.get();
+  const c=st.config, at=st.airtable, ejs=st.emailjs;
+  const g=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+  g('cfg-min',c.minBlocksRequired); g('cfg-dur',c.interviewDurationMins);
+  g('cfg-buf',c.bufferMins); g('cfg-brk',c.midBreakAfterStudent); g('cfg-brkd',c.midBreakMins);
+  g('at-base',at.baseId); g('at-table',at.table); g('at-email-f',at.emailField); g('at-date-f',at.interviewDateField);
+  g('ejs-stu',ejs.studentTpl); g('ejs-pan',ejs.panelistTpl);
+}
+function saveConfig() {
+  const st=STORE.get();
+  const n=id=>parseInt(document.getElementById(id)?.value)||0;
+  st.config.minBlocksRequired=n('cfg-min')||3;
+  st.config.interviewDurationMins=n('cfg-dur')||15;
+  st.config.bufferMins=n('cfg-buf');
+  st.config.midBreakAfterStudent=n('cfg-brk')||3;
+  st.config.midBreakMins=n('cfg-brkd')||15;
+  STORE.save(); STORE.log('admin','Config updated'); toast('Parameters saved.','ok');
+}
+function saveAirtable() {
+  const st=STORE.get();
+  const g=id=>document.getElementById(id)?.value.trim()||'';
+  st.airtable={baseId:g('at-base'),table:g('at-table')||'Applications',emailField:g('at-email-f')||'Email',interviewDateField:g('at-date-f')||'Interview Date',panelField:'Video Panels'};
+  STORE.save(); toast('Airtable config saved.','ok');
+}
+function saveEmailJS() {
+  const st=STORE.get();
+  st.emailjs.studentTpl=document.getElementById('ejs-stu')?.value.trim()||'';
+  st.emailjs.panelistTpl=document.getElementById('ejs-pan')?.value.trim()||'';
+  STORE.save(); toast('Template IDs saved.','ok');
+}
+function changePw() {
+  const np=document.getElementById('new-pw')?.value, cp=document.getElementById('conf-pw')?.value;
+  if(!np||np.length<4){toast('Min 4 chars.','bad');return;}
+  if(np!==cp){toast('Passwords do not match.','bad');return;}
+  const st=STORE.get(); st.adminPassword=np; STORE.save();
+  document.getElementById('new-pw').value=''; document.getElementById('conf-pw').value='';
+  toast('Password updated.','ok');
+}
+
+// ── Helpers ────────────────────────────────────────────────
+function initials(name){return name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();}
+function fmtDate(ds){const d=new Date(ds+'T00:00:00');return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function fmtTs(ts){const d=new Date(ts);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
+function today(){return new Date().toISOString().slice(0,10);}
+function downloadCSV(rows,filename){
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=filename; a.click();
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-bg').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)b.classList.remove('open');}));
+
+let _tt;
+function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+(type||'');clearTimeout(_tt);_tt=setTimeout(()=>el.className='toast',3200);}
+
+// ── Patch tab init ─────────────────────────────────────────
+document.querySelector('#sec-panelists .tabs .tab-btn').addEventListener('click', function() { panelistImportTab('single', this); });
+</script>
+</body>
+</html>

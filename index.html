@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Scheduler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0F1117;
+  --ink2: #4A4D58;
+  --ink3: #9699A6;
+  --paper: #FAF9F7;
+  --white: #FFFFFF;
+  --border: rgba(15,17,23,0.1);
+  --border2: rgba(15,17,23,0.18);
+  --green: #1B6B45;
+  --green-bg: #EBF5F0;
+  --green-border: #B8DEC9;
+  --amber: #B45309;
+  --amber-bg: #FEF3E2;
+  --red: #C0392B;
+  --red-bg: #FEF2F2;
+  --r: 14px;
+  --rs: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
+
+/* PAGES */
+.page { display: none; min-height: 100vh; }
+.page.active { display: flex; flex-direction: column; }
+
+/* ── LANDING ── */
+#pg-landing { align-items: center; justify-content: center; padding: 40px 24px; }
+.land-wrap { text-align: center; max-width: 440px; width: 100%; }
+.land-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); margin-bottom: 20px; }
+.land-title { font-family: 'Playfair Display', serif; font-size: clamp(32px,7vw,52px); line-height: 1.1; margin-bottom: 16px; }
+.land-title em { font-style: italic; color: var(--green); }
+.land-sub { font-size: 15px; color: var(--ink2); line-height: 1.65; margin-bottom: 36px; }
+.land-btns { display: flex; flex-direction: column; gap: 12px; }
+.btn-fill { height: 50px; border-radius: var(--rs); background: var(--green); color: #fff; border: none; font: 600 15px 'DM Sans',sans-serif; cursor: pointer; transition: opacity .18s; }
+.btn-fill:hover { opacity: .88; }
+.btn-stroke { height: 50px; border-radius: var(--rs); background: transparent; color: var(--ink2); border: 1px solid var(--border2); font: 500 14px 'DM Sans',sans-serif; cursor: pointer; transition: all .18s; }
+.btn-stroke:hover { border-color: var(--green); color: var(--green); }
+
+/* ── EMAIL GATE ── */
+#pg-email { align-items: center; justify-content: center; padding: 40px 20px; }
+.gate-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 36px 32px; width: 100%; max-width: 420px; box-shadow: 0 4px 24px rgba(0,0,0,.05); }
+.gate-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink3); cursor: pointer; margin-bottom: 24px; border: none; background: none; font-family: 'DM Sans',sans-serif; }
+.gate-back:hover { color: var(--ink); }
+.gate-card h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 6px; }
+.gate-card p { font-size: 13px; color: var(--ink2); margin-bottom: 22px; line-height: 1.6; }
+.field-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); display: block; margin-bottom: 6px; }
+.field-input { width: 100%; height: 44px; border: 1px solid var(--border2); border-radius: var(--rs); padding: 0 14px; font: 14px 'DM Sans',sans-serif; color: var(--ink); background: var(--paper); outline: none; transition: border-color .18s; }
+.field-input:focus { border-color: var(--green); }
+.err { font-size: 12px; color: var(--red); margin-top: 8px; display: none; }
+.spin { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── BOOKING PAGE ── */
+#pg-booking { flex-direction: column; }
+.booking-hero { background: var(--green); color: #fff; padding: 36px 24px 52px; text-align: center; }
+.booking-hero .ey { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; opacity: .65; margin-bottom: 12px; }
+.booking-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(26px,5vw,38px); }
+.student-pill { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,.12); border-radius: 40px; padding: 8px 16px 8px 10px; margin-top: 14px; }
+.s-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.s-name { font-size: 14px; font-weight: 500; }
+.booking-body { max-width: 520px; margin: -24px auto 60px; padding: 0 20px; }
+
+/* Calendar */
+.cal-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,.06); }
+.cal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); }
+.cal-month { font-family: 'Playfair Display', serif; font-size: 18px; }
+.cal-nav-btn { width: 32px; height: 32px; border: 1px solid var(--border2); border-radius: var(--rs); background: none; cursor: pointer; font-size: 15px; color: var(--ink2); display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.cal-nav-btn:hover { background: var(--paper); color: var(--ink); }
+.cal-wds { display: grid; grid-template-columns: repeat(7,1fr); }
+.cal-wd { text-align: center; padding: 10px 0; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
+.cal-days { display: grid; grid-template-columns: repeat(7,1fr); }
+.cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 13px; color: var(--ink3); position: relative; cursor: default; transition: all .12s; }
+.cal-day.has-slots { color: var(--ink); cursor: pointer; }
+.cal-day.has-slots:hover { background: var(--green-bg); }
+.cal-day.has-slots.sel { background: var(--green); color: #fff; }
+.cal-day.full { background: rgba(0,0,0,.02); }
+.cal-day.today .dn { font-weight: 700; }
+.dn { font-size: 14px; line-height: 1; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+.cal-day.sel .dot { background: rgba(255,255,255,.6); }
+.cal-day.full .dot { background: var(--border2); }
+
+/* Time slots */
+.time-panel { margin-top: 16px; display: none; }
+.time-panel.show { display: block; }
+.sec-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
+.shift-group { margin-bottom: 16px; }
+.shift-title { font-size: 12px; font-weight: 600; color: var(--ink2); margin-bottom: 8px; padding: 4px 10px; background: var(--paper); border-radius: 6px; display: inline-block; }
+.slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.slot-chip { border: 1px solid var(--border2); border-radius: var(--rs); padding: 10px 6px; text-align: center; cursor: pointer; transition: all .15s; background: var(--white); }
+.slot-chip:hover { border-color: var(--green); background: var(--green-bg); }
+.slot-chip.sel { background: var(--green); border-color: var(--green); color: #fff; }
+.slot-chip.booked { background: var(--paper); color: var(--ink3); cursor: not-allowed; border-style: dashed; text-decoration: line-through; }
+.slot-time { font-size: 13px; font-weight: 600; display: block; }
+.slot-sub { font-size: 10px; opacity: .65; display: block; margin-top: 2px; }
+
+/* Confirm bar */
+.confirm-box { margin-top: 20px; display: none; }
+.confirm-box.show { display: block; }
+.confirm-preview { background: var(--green-bg); border: 1px solid var(--green-border); border-radius: var(--rs); padding: 14px 16px; font-size: 13px; color: var(--green); line-height: 1.7; margin-bottom: 12px; }
+.btn-confirm { width: 100%; height: 50px; background: var(--green); color: #fff; border: none; border-radius: var(--rs); font: 600 15px 'DM Sans',sans-serif; cursor: pointer; transition: opacity .18s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-confirm:hover { opacity: .88; }
+.btn-confirm:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── SUCCESS ── */
+#pg-success { align-items: center; justify-content: center; padding: 40px 24px; text-align: center; }
+.success-wrap { max-width: 380px; }
+.success-icon { width: 72px; height: 72px; border-radius: 50%; background: var(--green-bg); border: 2px solid var(--green-border); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 24px; }
+.success-wrap h2 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--green); margin-bottom: 10px; }
+.success-wrap p { font-size: 14px; color: var(--ink2); line-height: 1.7; }
+.success-detail { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; text-align: left; margin-top: 24px; }
+.sd-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.sd-row:last-child { border: none; }
+.sd-label { color: var(--ink2); }
+.sd-val { font-weight: 600; }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--ink); color: #fff; padding: 12px 18px; border-radius: var(--rs); font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 300px; line-height: 1.5; }
+.toast.show { opacity: 1; }
+.toast.ok { background: var(--green); }
+.toast.bad { background: var(--red); }
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="pg-landing" class="page active">
+  <div class="land-wrap">
+    <div class="land-eyebrow">Admissions · Interview Portal</div>
+    <h1 class="land-title">Schedule Your<br><em>Interview</em></h1>
+    <p class="land-sub">Secure your spot for the admissions interview. Slots are limited and assigned first-come, first-served.</p>
+    <div class="land-btns">
+      <button class="btn-fill" onclick="go('pg-email')">Book My Interview Slot →</button>
+      <button class="btn-stroke" onclick="window.location='/admin.html'">Admin / Panel Access</button>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL GATE -->
+<div id="pg-email" class="page">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;">
+    <div class="gate-card">
+      <button class="gate-back" onclick="go('pg-landing')">← Back</button>
+      <h2>Verify Your Identity</h2>
+      <p>Enter the email address you used during your application. We'll confirm your admission status before showing available slots.</p>
+      <label class="field-label">Application Email</label>
+      <input class="field-input" type="email" id="s-email" placeholder="yourname@email.com" onkeypress="if(event.key==='Enter')verifyStudent()" />
+      <div class="err" id="s-err"></div>
+      <button class="btn-fill" style="width:100%;margin-top:14px;" id="s-verify-btn" onclick="verifyStudent()">Verify & Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING -->
+<div id="pg-booking" class="page">
+  <div class="booking-hero">
+    <div class="ey">Interview Scheduling</div>
+    <h1>Choose Your Slot</h1>
+    <div class="student-pill" id="s-pill">
+      <div class="s-avatar" id="s-initials">??</div>
+      <span class="s-name" id="s-display-name">Student</span>
+    </div>
+  </div>
+  <div class="booking-body">
+    <div class="cal-card">
+      <div class="cal-head">
+        <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+        <div class="cal-month" id="cal-lbl"></div>
+        <button class="cal-nav-btn" onclick="calNext()">›</button>
+      </div>
+      <div class="cal-wds">
+        <div class="cal-wd">Su</div><div class="cal-wd">Mo</div><div class="cal-wd">Tu</div>
+        <div class="cal-wd">We</div><div class="cal-wd">Th</div><div class="cal-wd">Fr</div><div class="cal-wd">Sa</div>
+      </div>
+      <div class="cal-days" id="cal-days"></div>
+    </div>
+    <div class="time-panel" id="time-panel">
+      <div class="sec-label" id="time-label">Available Times</div>
+      <div id="time-slots"></div>
+    </div>
+    <div class="confirm-box" id="confirm-box">
+      <div class="confirm-preview" id="confirm-preview"></div>
+      <button class="btn-confirm" id="confirm-btn" onclick="doBook()">Confirm My Slot</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="pg-success" class="page">
+  <div class="success-wrap">
+    <div class="success-icon">✓</div>
+    <h2>You're Confirmed!</h2>
+    <p>Your interview is scheduled. A confirmation email has been sent to you with all the details.</p>
+    <div class="success-detail" id="success-detail"></div>
+    <p style="margin-top:16px;font-size:12px;color:var(--ink3);">The interview panel has been notified. Check your email for the Zoom link closer to your interview date.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/lib/store.js"></script>
+<script>
+// ── state ──────────────────────────────────────────────────
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let selDate = null;
+let selInstanceId = null;
+let selSlotIndex = null;
+let currentStudent = null;
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Email verify ───────────────────────────────────────────
+async function verifyStudent() {
+  const email = document.getElementById('s-email').value.trim().toLowerCase();
+  const btn   = document.getElementById('s-verify-btn');
+  const err   = document.getElementById('s-err');
+  err.style.display = 'none';
+  if (!email || !email.includes('@')) { showErr(err, 'Please enter a valid email.'); return; }
+
+  const st = STORE.get();
+
+  // Already booked?
+  const existing = st.bookings.find(b => b.studentEmail.toLowerCase() === email);
+  if (existing) { showErr(err, 'You have already booked a slot. Check your email for details.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Checking…';
+
+  // Check local list first
+  let student = st.studentEmails.find(s => s.email.toLowerCase() === email);
+
+  // Fallback: Airtable via API proxy
+  if (!student) {
+    try {
+      const r = await fetch('/api/airtable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'lookup',
+          table: st.airtable.table,
+          emailField: st.airtable.emailField,
+          email
+        })
+      });
+      const d = await r.json();
+      if (d.record) {
+        const rec = d.record;
+        const name = rec.fields['Name'] || rec.fields['Full Name'] || rec.fields['Student Name'] || email.split('@')[0];
+        student = { name, email, bookedInstanceId: null, bookedSlotIndex: null, airtableRecordId: rec.id };
+        // Auto-add to local list so we have the record id
+        st.studentEmails.push(student);
+        STORE.save();
+      }
+    } catch(e) { /* API proxy not available locally */ }
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Verify & Continue';
+
+  if (!student) {
+    showErr(err, 'Email not found in our applicant database. Please use the email from your application.');
+    return;
+  }
+
+  currentStudent = student;
+  const initials = student.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('s-initials').textContent = initials;
+  document.getElementById('s-display-name').textContent = student.name;
+  go('pg-booking');
+  renderCal();
+}
+
+// ── Calendar ───────────────────────────────────────────────
+function renderCal() {
+  document.getElementById('cal-lbl').textContent = `${MONTHS[calMonth]} ${calYear}`;
+  const st = STORE.get();
+  const today = new Date();
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const days = new Date(calYear, calMonth + 1, 0).getDate();
+  const grid = document.getElementById('cal-days');
+  grid.innerHTML = '';
+
+  for (let i = 0; i < firstDay; i++) {
+    const el = document.createElement('div'); el.className = 'cal-day'; grid.appendChild(el);
+  }
+  for (let d = 1; d <= days; d++) {
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el = document.createElement('div');
+    el.className = 'cal-day';
+
+    const openMap = STORE.getOpenSlotsForDate(ds);
+    const totalOpen = Object.values(openMap).reduce((a,c) => a + c.length, 0);
+    const hasBlocks = st.panelInstances.some(inst => {
+      const blk = st.timeBlocks.find(b => b.id === inst.timeBlockId);
+      return blk && blk.date === ds;
+    });
+    const isPast = new Date(ds) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    if (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()) el.classList.add('today');
+
+    el.innerHTML = `<span class="dn">${d}</span>`;
+
+    if (hasBlocks && !isPast) {
+      if (totalOpen === 0) {
+        el.classList.add('full');
+        el.innerHTML += '<span class="dot"></span>';
+        el.title = 'Fully booked';
+      } else {
+        el.classList.add('has-slots');
+        if (selDate === ds) el.classList.add('sel');
+        el.innerHTML += '<span class="dot"></span>';
+        el.title = `${totalOpen} slot${totalOpen !== 1 ? 's' : ''} open`;
+        el.onclick = () => selectDate(ds);
+      }
+    }
+    grid.appendChild(el);
+  }
+}
+
+function selectDate(ds) {
+  selDate = ds; selInstanceId = null; selSlotIndex = null;
+  renderCal();
+  renderTimeSlots(ds);
+  document.getElementById('confirm-box').classList.remove('show');
+}
+
+function renderTimeSlots(ds) {
+  const st = STORE.get();
+  const openMap = STORE.getOpenSlotsForDate(ds);
+  const panel = document.getElementById('time-panel');
+  const container = document.getElementById('time-slots');
+
+  // Group by shift
+  const shiftOrder = ['morning','evening','sat-morning','sat-afternoon'];
+  const shiftLabels = { morning: 'Morning Shift', evening: 'Evening Shift', 'sat-morning': 'Saturday Morning', 'sat-afternoon': 'Saturday Afternoon' };
+
+  // Build time → shift mapping
+  const timeToShift = {};
+  for (const inst of st.panelInstances) {
+    const blk = st.timeBlocks.find(b => b.id === inst.timeBlockId);
+    if (!blk || blk.date !== ds) continue;
+    for (const slot of inst.studentSlots) {
+      timeToShift[slot.startTime] = blk.shift;
+    }
+  }
+
+  // Group open times by shift
+  const byShift = {};
+  for (const [time, slots] of Object.entries(openMap)) {
+    const shift = timeToShift[time] || 'morning';
+    if (!byShift[shift]) byShift[shift] = {};
+    byShift[shift][time] = slots;
+  }
+
+  container.innerHTML = '';
+  const d = new Date(ds + 'T00:00:00');
+  document.getElementById('time-label').textContent = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+
+  let hasAny = false;
+  for (const shift of shiftOrder) {
+    if (!byShift[shift]) continue;
+    hasAny = true;
+    const times = Object.keys(byShift[shift]).sort();
+    const sg = document.createElement('div'); sg.className = 'shift-group';
+    sg.innerHTML = `<div class="shift-title">${shiftLabels[shift]}</div><div class="slots-grid" id="sg-${shift}"></div>`;
+    container.appendChild(sg);
+    const grid = document.getElementById(`sg-${shift}`);
+    for (const time of times) {
+      const available = byShift[shift][time];
+      const chip = document.createElement('div');
+      chip.className = 'slot-chip';
+      const t = STORE.formatTime(time);
+      chip.innerHTML = `<span class="slot-time">${t}</span><span class="slot-sub">${available.length} panel${available.length > 1 ? 's' : ''} open</span>`;
+      chip.onclick = () => selectSlot(time, available[0], chip);
+      grid.appendChild(chip);
+    }
+  }
+
+  if (!hasAny) container.innerHTML = '<p style="font-size:13px;color:var(--ink3);padding:8px 0;">No open slots for this date.</p>';
+  panel.classList.add('show');
+}
+
+function selectSlot(time, ref, chip) {
+  document.querySelectorAll('.slot-chip').forEach(c => c.classList.remove('sel'));
+  chip.classList.add('sel');
+  selInstanceId = ref.instanceId;
+  selSlotIndex  = ref.slotIndex;
+
+  const d = new Date(selDate + 'T00:00:00');
+  const dl = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('confirm-preview').innerHTML =
+    `<strong>${currentStudent.name}</strong><br>📅 ${dl}<br>🕐 ${STORE.formatTime(time)}<br><span style="font-size:11px;opacity:.8;">Panel details will be sent to your email.</span>`;
+  document.getElementById('confirm-box').classList.add('show');
+}
+
+async function doBook() {
+  const btn = document.getElementById('confirm-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Confirming…';
+
+  const booking = STORE.bookSlot(currentStudent.email, selInstanceId, selSlotIndex);
+  if (!booking) {
+    toast('That slot was just taken — please select another.', 'bad');
+    btn.disabled = false; btn.textContent = 'Confirm My Slot';
+    selInstanceId = null; selSlotIndex = null;
+    renderTimeSlots(selDate);
+    return;
+  }
+
+  const st = STORE.get();
+  const inst = st.panelInstances.find(i => i.id === booking.instanceId);
+  const panelists = (inst?.panelistIds || []).map(pid => st.panelists.find(p => p.id === pid)).filter(Boolean);
+  const zoom = st.config.zoomLinks.find(z => z.url) || {};
+
+  // Parallel: Airtable + emails
+  await Promise.allSettled([
+    patchAirtable(booking, st),
+    sendStudentEmail(booking, panelists, zoom, st),
+    sendPanelistEmails(booking, panelists, zoom, st),
+  ]);
+
+  btn.disabled = false; btn.textContent = 'Confirm My Slot';
+
+  // Success page
+  const d = new Date(booking.date + 'T00:00:00');
+  const dl = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('success-detail').innerHTML = `
+    <div class="sd-row"><span class="sd-label">Name</span><span class="sd-val">${booking.studentName}</span></div>
+    <div class="sd-row"><span class="sd-label">Date</span><span class="sd-val">${dl}</span></div>
+    <div class="sd-row"><span class="sd-label">Time</span><span class="sd-val">${STORE.formatTime(booking.slotTime)}</span></div>
+    <div class="sd-row"><span class="sd-label">Panel</span><span class="sd-val">${booking.panelLabel}</span></div>
+    <div class="sd-row"><span class="sd-label">Confirmation</span><span class="sd-val">Sent to email ✓</span></div>`;
+  go('pg-success');
+}
+
+// ── Airtable ───────────────────────────────────────────────
+async function patchAirtable(booking, st) {
+  try {
+    let recordId = booking.airtableRecordId;
+    if (!recordId) {
+      const r = await fetch('/api/airtable', { method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'lookup', table: st.airtable.table, emailField: st.airtable.emailField, email: booking.studentEmail }) });
+      const d = await r.json();
+      recordId = d.record?.id;
+    }
+    if (!recordId) return;
+    await fetch('/api/airtable', { method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'patch', table: st.airtable.table, recordId,
+        fields: {
+          [st.airtable.interviewDateField]: `${booking.date} ${booking.slotTime}`,
+          [st.airtable.panelField]: booking.panelLabel,
+        }
+      })
+    });
+  } catch(e) { console.warn('Airtable patch failed', e); }
+}
+
+// ── Emails ─────────────────────────────────────────────────
+async function sendStudentEmail(booking, panelists, zoom, st) {
+  const tpl = st.emailjs.studentTpl; if (!tpl) return;
+  const r = await fetch('/api/email', { method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ templateId: tpl, params: {
+      to_email: booking.studentEmail, to_name: booking.studentName,
+      interview_date: new Date(booking.date+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),
+      interview_time: STORE.formatTime(booking.slotTime),
+      panel_label: booking.panelLabel,
+      zoom_url: zoom.url || 'TBC', zoom_meeting_id: zoom.meetingId || '', zoom_passcode: zoom.passcode || '',
+    }})
+  });
+  STORE.log('email', `Confirmation email sent to student ${booking.studentName}`, { to: booking.studentEmail });
+}
+
+async function sendPanelistEmails(booking, panelists, zoom, st) {
+  const tpl = st.emailjs.panelistTpl; if (!tpl || !panelists.length) return;
+  const d = new Date(booking.date+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const coPanelists = panelists.map(p => `${p.name} (${p.email})`).join(', ');
+  for (const p of panelists) {
+    await fetch('/api/email', { method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ templateId: tpl, params: {
+        to_email: p.email, to_name: p.name,
+        student_name: booking.studentName, student_email: booking.studentEmail,
+        interview_date: d, interview_time: STORE.formatTime(booking.slotTime),
+        panel_label: booking.panelLabel, co_panelists: coPanelists,
+        zoom_url: zoom.url || 'TBC', zoom_meeting_id: zoom.meetingId || '', zoom_passcode: zoom.passcode || '',
+      }})
+    });
+    STORE.log('email', `Panelist notification sent to ${p.name} re: ${booking.studentName}`, { to: p.email });
+  }
+}
+
+// ── Calendar nav ───────────────────────────────────────────
+function calPrev() { if (calMonth===0){calMonth=11;calYear--;}else calMonth--; selDate=null; renderCal(); document.getElementById('time-panel').classList.remove('show'); document.getElementById('confirm-box').classList.remove('show'); }
+function calNext() { if (calMonth===11){calMonth=0;calYear++;}else calMonth++; selDate=null; renderCal(); document.getElementById('time-panel').classList.remove('show'); document.getElementById('confirm-box').classList.remove('show'); }
+
+// ── Toast ──────────────────────────────────────────────────
+let _tt;
+function toast(msg, type='') { const el=document.getElementById('toast'); el.textContent=msg; el.className='toast show '+(type||''); clearTimeout(_tt); _tt=setTimeout(()=>el.className='toast',3000); }
+function showErr(el, msg) { el.textContent=msg; el.style.display='block'; }
+</script>
+</body>
+</html>

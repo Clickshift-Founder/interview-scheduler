@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Availability</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0F1117;--ink2:#4A4D58;--ink3:#9699A6;
+  --paper:#FAF9F7;--white:#FFFFFF;
+  --border:rgba(15,17,23,.10);--border2:rgba(15,17,23,.18);
+  --green:#1B6B45;--gbg:#EBF5F0;--gborder:#B8DEC9;
+  --amber:#B45309;--abg:#FEF3E2;
+  --red:#C0392B;--rbg:#FEF2F2;
+  --r:14px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+.page{display:none;min-height:100vh;flex-direction:column;}
+.page.active{display:flex;}
+
+/* ── LOGIN ── */
+#pg-login{align-items:center;justify-content:center;padding:40px 20px;}
+.login-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:36px 30px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.05);}
+.login-card h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:6px;}
+.login-card p{font-size:13px;color:var(--ink2);margin-bottom:22px;line-height:1.6;}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:6px;}
+.inp{width:100%;height:44px;border:1px solid var(--border2);border-radius:var(--rs);padding:0 14px;font:14px 'DM Sans',sans-serif;color:var(--ink);background:var(--paper);outline:none;transition:border-color .18s;}
+.inp:focus{border-color:var(--green);}
+.err{font-size:12px;color:var(--red);margin-top:8px;display:none;}
+.btn{height:44px;border-radius:var(--rs);border:none;font:600 14px 'DM Sans',sans-serif;cursor:pointer;transition:opacity .18s;}
+.btn-g{background:var(--green);color:#fff;width:100%;margin-top:14px;}
+.btn-g:hover{opacity:.88;}
+.btn-g:disabled{opacity:.5;cursor:not-allowed;}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── PORTAL ── */
+#pg-portal{flex-direction:column;}
+.portal-header{background:var(--green);color:#fff;padding:24px 24px 40px;}
+.portal-header .ey{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-bottom:8px;}
+.portal-header h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,30px);}
+.portal-header .who{font-size:13px;opacity:.75;margin-top:6px;}
+.portal-body{max-width:600px;margin:-20px auto 60px;padding:0 20px;}
+
+/* Progress pill */
+.progress-pill{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+.prog-left{display:flex;flex-direction:column;gap:2px;}
+.prog-count{font-size:22px;font-weight:600;color:var(--green);}
+.prog-label{font-size:12px;color:var(--ink3);}
+.prog-bar-wrap{flex:1;margin:0 16px;height:6px;background:var(--paper);border-radius:3px;overflow:hidden;}
+.prog-bar{height:100%;background:var(--green);border-radius:3px;transition:width .3s;}
+.prog-min{font-size:12px;color:var(--ink2);white-space:nowrap;}
+
+/* Blocks */
+.month-section{margin-bottom:24px;}
+.month-head{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.blocks-list{display:flex;flex-direction:column;gap:8px;}
+.block-item{display:flex;align-items:center;gap:14px;background:var(--white);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;cursor:pointer;transition:all .15s;user-select:none;}
+.block-item:hover{border-color:var(--green);background:var(--gbg);}
+.block-item.selected{border-color:var(--green);background:var(--gbg);}
+.block-item.submitted{opacity:.6;cursor:not-allowed;background:var(--paper);}
+.block-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .15s;}
+.block-item.selected .block-check{background:var(--green);border-color:var(--green);color:#fff;}
+.block-item.submitted .block-check{background:var(--ink3);border-color:var(--ink3);color:#fff;}
+.block-info{flex:1;}
+.block-date{font-size:14px;font-weight:600;}
+.block-shift{font-size:12px;color:var(--ink2);margin-top:2px;}
+.block-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.badge-morning{background:var(--abg);color:var(--amber);}
+.badge-evening{background:#EEF2FF;color:#4F46E5;}
+.badge-sat{background:var(--gbg);color:var(--green);}
+
+/* Submit bar */
+.submit-wrap{margin-top:24px;}
+.submit-note{font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6;}
+.submit-note span{color:var(--red);font-weight:600;}
+.btn-submit{width:100%;height:50px;border-radius:var(--rs);background:var(--green);color:#fff;border:none;font:600 15px 'DM Sans',sans-serif;cursor:pointer;transition:opacity .18s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-submit:hover{opacity:.88;}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;}
+
+/* Success */
+.success-card{background:var(--white);border:1px solid var(--gborder);border-radius:var(--r);padding:28px;text-align:center;margin-top:20px;}
+.success-card .icon{font-size:36px;margin-bottom:12px;}
+.success-card h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--green);margin-bottom:8px;}
+.success-card p{font-size:13px;color:var(--ink2);line-height:1.6;}
+.add-more-btn{margin-top:16px;height:40px;padding:0 20px;border:1px solid var(--border2);border-radius:var(--rs);background:none;font:500 13px 'DM Sans',sans-serif;cursor:pointer;color:var(--ink2);transition:all .15s;}
+.add-more-btn:hover{border-color:var(--green);color:var(--green);}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:280px;}
+.toast.show{opacity:1;}
+.toast.ok{background:var(--green);}
+.toast.bad{background:var(--red);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="pg-login" class="page active">
+  <div class="login-card">
+    <h2>Panelist Portal</h2>
+    <p>Enter your registered email to access your availability form.</p>
+    <label class="lbl">Your Email</label>
+    <input class="inp" type="email" id="p-email" placeholder="you@institution.edu" onkeypress="if(event.key==='Enter')loginPanelist()" />
+    <div class="err" id="p-err"></div>
+    <button class="btn btn-g" id="p-login-btn" onclick="loginPanelist()">Access My Form</button>
+    <div style="text-align:center;margin-top:16px;">
+      <a href="/" style="font-size:12px;color:var(--ink3);text-decoration:none;">← Student booking portal</a>
+    </div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div id="pg-portal" class="page">
+  <div class="portal-header">
+    <div class="ey">Panelist Portal</div>
+    <h1>Your Availability</h1>
+    <div class="who" id="p-who"></div>
+  </div>
+  <div class="portal-body">
+    <div class="progress-pill">
+      <div class="prog-left">
+        <div class="prog-count" id="prog-count">0</div>
+        <div class="prog-label">blocks selected</div>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+      <div class="prog-min" id="prog-min">min 3 required</div>
+    </div>
+    <div id="blocks-container"></div>
+    <div class="submit-wrap" id="submit-wrap">
+      <div class="submit-note" id="submit-note"></div>
+      <button class="btn-submit" id="submit-btn" onclick="submitAvailability()">Submit My Availability</button>
+    </div>
+    <div class="success-card" id="success-card" style="display:none">
+      <div class="icon">🎯</div>
+      <h3>Availability Submitted!</h3>
+      <p id="success-msg">Your availability has been recorded. You'll receive an email when you're matched into a panel and students begin booking your slots.</p>
+      <button class="add-more-btn" onclick="showAddMore()">+ Add More Availability</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/lib/store.js"></script>
+<script>
+let currentPanelist = null;
+let selectedBlockIds = new Set();
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function loginPanelist() {
+  const email = document.getElementById('p-email').value.trim().toLowerCase();
+  const err   = document.getElementById('p-err');
+  const btn   = document.getElementById('p-login-btn');
+  err.style.display = 'none';
+  if (!email || !email.includes('@')) { err.textContent='Enter a valid email.'; err.style.display='block'; return; }
+
+  const st = STORE.get();
+  const panelist = st.panelists.find(p => p.email.toLowerCase() === email);
+  if (!panelist) {
+    err.textContent = 'Email not registered as a panelist. Contact the admin.';
+    err.style.display = 'block';
+    return;
+  }
+
+  currentPanelist = panelist;
+  document.getElementById('p-who').textContent = `Welcome, ${panelist.name}`;
+  renderPortal();
+  go('pg-portal');
+}
+
+function renderPortal() {
+  const st = STORE.get();
+  const myAvail = st.availability.filter(a => a.panelistId === currentPanelist.id).map(a => a.timeBlockId);
+  const minBlocks = st.config.minBlocksRequired;
+
+  // Group blocks by month
+  const byMonth = {};
+  const sorted = [...st.timeBlocks].sort((a,b) => a.date.localeCompare(b.date));
+  for (const blk of sorted) {
+    const d = new Date(blk.date + 'T00:00:00');
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    const label = `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+    if (!byMonth[key]) byMonth[key] = { label, blocks: [] };
+    byMonth[key].blocks.push(blk);
+  }
+
+  const container = document.getElementById('blocks-container');
+  container.innerHTML = '';
+
+  if (sorted.length === 0) {
+    container.innerHTML = '<p style="font-size:13px;color:var(--ink3);padding:20px 0;text-align:center;">No time blocks available yet. Check back soon.</p>';
+    document.getElementById('submit-wrap').style.display = 'none';
+    return;
+  }
+
+  for (const [key, { label, blocks }] of Object.entries(byMonth)) {
+    const sec = document.createElement('div'); sec.className = 'month-section';
+    sec.innerHTML = `<div class="month-head">${label}</div><div class="blocks-list" id="bl-${key}"></div>`;
+    container.appendChild(sec);
+    const list = document.getElementById(`bl-${key}`);
+    for (const blk of blocks) {
+      const isSubmitted = myAvail.includes(blk.id);
+      const isSelected  = selectedBlockIds.has(blk.id);
+      const item = document.createElement('div');
+      item.className = 'block-item' + (isSubmitted ? ' submitted' : isSelected ? ' selected' : '');
+      item.id = 'bi-' + blk.id;
+
+      const badgeClass = blk.shift === 'morning' ? 'badge-morning' : blk.shift === 'evening' ? 'badge-evening' : 'badge-sat';
+      const d = new Date(blk.date + 'T00:00:00');
+      const dl = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+      item.innerHTML = `
+        <div class="block-check">${isSubmitted ? '✓' : isSelected ? '✓' : ''}</div>
+        <div class="block-info">
+          <div class="block-date">${dl}</div>
+          <div class="block-shift">${blk.startTime} – ${blk.endTime} · ${blk.label}</div>
+        </div>
+        <span class="block-badge ${badgeClass}">${blk.shiftLabel || blk.shift}</span>`;
+
+      if (!isSubmitted) {
+        item.onclick = () => toggleBlock(blk.id, minBlocks);
+      }
+      list.appendChild(item);
+    }
+  }
+
+  updateProgress(minBlocks);
+  document.getElementById('submit-wrap').style.display = 'block';
+}
+
+function toggleBlock(id, minBlocks) {
+  if (selectedBlockIds.has(id)) {
+    selectedBlockIds.delete(id);
+    const el = document.getElementById('bi-' + id);
+    el.classList.remove('selected');
+    el.querySelector('.block-check').textContent = '';
+  } else {
+    selectedBlockIds.add(id);
+    const el = document.getElementById('bi-' + id);
+    el.classList.add('selected');
+    el.querySelector('.block-check').textContent = '✓';
+  }
+  updateProgress(minBlocks);
+}
+
+function updateProgress(minBlocks) {
+  const count = selectedBlockIds.size;
+  const pct = Math.min(100, (count / minBlocks) * 100);
+  document.getElementById('prog-count').textContent = count;
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('prog-min').textContent = `min ${minBlocks} required`;
+
+  const note = document.getElementById('submit-note');
+  const btn  = document.getElementById('submit-btn');
+  if (count < minBlocks) {
+    note.innerHTML = `Please select at least <span>${minBlocks} time blocks</span> to ensure enough overlap for panel formation. You've selected ${count}.`;
+    btn.disabled = true;
+  } else {
+    note.innerHTML = `You've selected ${count} time block${count !== 1 ? 's' : ''}. Ready to submit!`;
+    btn.disabled = false;
+  }
+}
+
+function submitAvailability() {
+  const st = STORE.get();
+  const btn = document.getElementById('submit-btn');
+  if (selectedBlockIds.size < st.config.minBlocksRequired) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Submitting…';
+
+  const existing = st.availability.filter(a => a.panelistId === currentPanelist.id).map(a => a.timeBlockId);
+  let added = 0;
+  for (const blockId of selectedBlockIds) {
+    if (!existing.includes(blockId)) {
+      st.availability.push({ id: STORE.uid(), panelistId: currentPanelist.id, timeBlockId: blockId, submittedAt: new Date().toISOString() });
+      added++;
+    }
+  }
+  STORE.save();
+  STORE.log('availability', `${currentPanelist.name} submitted ${added} availability blocks`);
+  STORE.rebuildPanelInstances();
+
+  // Check if new panel instances formed — send notifications
+  notifyNewInstances(st);
+
+  btn.disabled = false;
+  btn.textContent = 'Submit My Availability';
+  selectedBlockIds.clear();
+  document.getElementById('success-card').style.display = 'block';
+  document.getElementById('success-msg').textContent = `Your ${added} block${added !== 1 ? 's' : ''} have been recorded. You'll receive an email when you're matched into a panel.`;
+  document.getElementById('submit-wrap').style.display = 'none';
+  toast(`${added} block${added !== 1 ? 's' : ''} submitted!`, 'ok');
+  renderPortal();
+}
+
+async function notifyNewInstances(st) {
+  // Notify panelists when a new instance reaches ready status
+  const ready = st.panelInstances.filter(i => i.status === 'ready');
+  for (const inst of ready) {
+    const blk = st.timeBlocks.find(b => b.id === inst.timeBlockId);
+    if (!blk) continue;
+    const panelists = inst.panelistIds.map(pid => st.panelists.find(p => p.id === pid)).filter(Boolean);
+    const coPanelists = panelists.map(p => `${p.name} (${p.email})`).join(', ');
+    const tpl = st.emailjs.panelistTpl; if (!tpl) continue;
+    const d = new Date(blk.date+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    for (const p of panelists) {
+      await fetch('/api/email', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ templateId: tpl, params: {
+          to_email: p.email, to_name: p.name,
+          interview_date: d, interview_time: `${blk.startTime} – ${blk.endTime}`,
+          panel_label: inst.label, co_panelists: coPanelists,
+          student_name: 'TBC', student_email: 'TBC',
+          zoom_url: '', zoom_meeting_id: '', zoom_passcode: '',
+        }})
+      });
+    }
+  }
+}
+
+function showAddMore() {
+  document.getElementById('success-card').style.display = 'none';
+  document.getElementById('submit-wrap').style.display = 'block';
+  renderPortal();
+}
+
+let _tt;
+function toast(msg, type='') { const el=document.getElementById('toast'); el.textContent=msg; el.className='toast show '+(type||''); clearTimeout(_tt); _tt=setTimeout(()=>el.className='toast',3000); }
+</script>
+</body>
+</html>
