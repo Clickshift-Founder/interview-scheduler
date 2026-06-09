@@ -335,47 +335,66 @@ async function doBook(){
   const btn=document.getElementById('confirm-btn');
   btn.disabled=true;btn.innerHTML='<span class="spin"></span> Confirming…';
   try{
+    // Step 1: book slot
     const result=await API.db('bookSlot',{email:currentStudent.email,instanceId:selInstanceId,slotIndex:selSlotIndex});
-    const {booking,panelists,zoom,config:c,airtablePanelLabel}=result;
-    // Airtable update
-    if(booking.airtable_record_id){
-      await API.airtable('patch',{table:c.airtable_table,recordId:booking.airtable_record_id,fields:{[c.airtable_date_field]:`${booking.date} ${booking.slot_time}`,[c.airtable_panel_field||'Video Panels']:airtablePanelLabel}});
-    } else {
-      const at=await API.airtable('lookup',{table:c.airtable_table,emailField:c.airtable_email_field,email:currentStudent.email});
-      if(at.record){
-        await API.airtable('patch',{table:c.airtable_table,recordId:at.record.id,fields:{[c.airtable_date_field]:`${booking.date} ${booking.slot_time}`,'Video Panels':airtablePanelLabel}});
-      }
-    }
-    // Student email
+    const {booking,panelists,zoom,airtablePanelLabel}=result;
+
+    // Step 2: fresh config — guarantees we have latest template IDs
+    const c=await API.db('getConfig');
+    console.log('[doBook] stuTpl:',c.emailjs_student_tpl,'panTpl:',c.emailjs_panelist_tpl);
+
+    const dateLabel=API.fmtDateLong(booking.date);
+    const timeLabel=API.formatTime(booking.slot_time);
+
+    // Pick correct zoom link for this instance
+    const zl=c.zoom_links||[];
+    const zi=typeof zoom==='object'&&zoom!==null ? (zoom.zoom_index||0) : 0;
+    const zoomObj=zl[zi]||zl[0]||{url:'TBC',meetingId:'',passcode:''};
+
+    // Step 3: Airtable update (best-effort)
+    try{
+      let rid=booking.airtable_record_id;
+      if(!rid){const at=await API.airtable('lookup',{table:c.airtable_table,emailField:c.airtable_email_field,email:currentStudent.email});rid=at.record?.id;}
+      if(rid){await API.airtable('patch',{table:c.airtable_table,recordId:rid,fields:{[c.airtable_date_field]:`${booking.date} ${booking.slot_time}`,'Video Panels':airtablePanelLabel}});}
+    }catch(atErr){console.warn('[doBook] Airtable:',atErr.message);}
+
+    // Step 4: student confirmation email
     if(c.emailjs_student_tpl){
-      const dl=API.fmtDateLong(booking.date);
-      await API.email(c.emailjs_student_tpl,{to_email:booking.student_email,to_name:booking.student_name,interview_date:dl,interview_time:API.formatTime(booking.slot_time),panel_label:airtablePanelLabel,zoom_url:zoom.url||'TBC',zoom_meeting_id:zoom.meetingId||'',zoom_passcode:zoom.passcode||''});
-      await API.db('addLog',{type:'email',message:`Confirmation email sent to ${booking.student_name}`,meta:{to:booking.student_email}});
+      const r=await API.email(c.emailjs_student_tpl,{to_email:booking.student_email,to_name:booking.student_name,interview_date:dateLabel,interview_time:timeLabel,panel_label:airtablePanelLabel,zoom_url:zoomObj.url||'TBC',zoom_meeting_id:zoomObj.meetingId||'',zoom_passcode:zoomObj.passcode||''});
+      console.log('[doBook] student email:',r);
+      await API.db('addLog',{type:'email',message:`Student confirmation → ${booking.student_name} [${r.ok?'OK':'FAILED: '+r.response}]`,meta:{to:booking.student_email,ok:r.ok}});
+    } else {
+      console.warn('[doBook] No student template ID — check Admin → Settings → EmailJS');
+      await API.db('addLog',{type:'admin',message:'Student email NOT sent — emailjs_student_tpl missing in config',meta:{}});
     }
-    // Panelist emails
-    if(c.emailjs_panelist_tpl&&panelists.length){
-      const dl=API.fmtDateLong(booking.date);
+
+    // Step 5: panelist notification emails
+    if(c.emailjs_panelist_tpl&&panelists&&panelists.length){
       const co=panelists.map(p=>`${p.name} (${p.email})`).join(', ');
       for(const p of panelists){
-        await API.email(c.emailjs_panelist_tpl,{to_email:p.email,to_name:p.name,student_name:booking.student_name,student_email:booking.student_email,interview_date:dl,interview_time:API.formatTime(booking.slot_time),panel_label:airtablePanelLabel,co_panelists:co,zoom_url:zoom.url||'TBC',zoom_meeting_id:zoom.meetingId||'',zoom_passcode:zoom.passcode||''});
-        await API.db('addLog',{type:'email',message:`Panel notification sent to ${p.name} re: ${booking.student_name}`,meta:{to:p.email}});
+        const r=await API.email(c.emailjs_panelist_tpl,{to_email:p.email,to_name:p.name,student_name:booking.student_name,student_email:booking.student_email,interview_date:dateLabel,interview_time:timeLabel,panel_label:airtablePanelLabel,co_panelists:co,zoom_url:zoomObj.url||'TBC',zoom_meeting_id:zoomObj.meetingId||'',zoom_passcode:zoomObj.passcode||''});
+        console.log('[doBook] panelist email',p.email,':',r);
+        await API.db('addLog',{type:'email',message:`Panelist → ${p.name} re ${booking.student_name} [${r.ok?'OK':'FAILED: '+r.response}]`,meta:{to:p.email,ok:r.ok}});
       }
+    } else if(!c.emailjs_panelist_tpl){
+      await API.db('addLog',{type:'admin',message:'Panelist emails NOT sent — emailjs_panelist_tpl missing in config',meta:{}});
     }
-    // Show success
-    const d=new Date(booking.date+'T00:00:00');
-    const dl=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+    // Step 6: success screen
+    const dl=new Date(booking.date+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     document.getElementById('suc-detail').innerHTML=`
       <div class="sdr"><span class="sdl">Name</span><span class="sdv">${booking.student_name}</span></div>
       <div class="sdr"><span class="sdl">Date</span><span class="sdv">${dl}</span></div>
-      <div class="sdr"><span class="sdl">Time</span><span class="sdv">${API.formatTime(booking.slot_time)}</span></div>
+      <div class="sdr"><span class="sdl">Time</span><span class="sdv">${timeLabel}</span></div>
       <div class="sdr"><span class="sdl">Panel</span><span class="sdv">${airtablePanelLabel}</span></div>
       <div class="sdr"><span class="sdl">Confirmation</span><span class="sdv">Sent to email ✓</span></div>`;
     go('pg-success');
   }catch(e){
-    toast(e.message.includes('taken')?'That slot was just taken — please select another.':'Something went wrong. Try again or contact technology@nigeria.thesppg.org','bad');
+    console.error('[doBook] error:',e);
+    toast(e.message.includes('taken')?'That slot was just taken — please select another.':e.message.includes('booked')?'You have already booked a slot. Check your email.':'Something went wrong. Try again or contact technology@nigeria.thesppg.org','bad');
     selInstanceId=null;selSlotIndex=null;
     openSlots=await API.db('getOpenSlots').catch(()=>openSlots);
-    renderTimeSlots(selDate);
+    if(selDate)renderTimeSlots(selDate);
   }
   btn.disabled=false;btn.textContent='Confirm My Interview Slot';
 }
