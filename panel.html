@@ -368,26 +368,22 @@ function buildSessionCard(sess, isPast){
   const statusChip=`chip-status-${sess.status}`;
   const statusLabel=sess.status==='ready'?'Panel Ready':sess.status==='forming'?'Panel Forming':sess.status==='active'?'In Progress':'Completed';
 
-  // Co-panelist names
   const coNames=sess.coPanelistIds.map(id=>{
     const p=allPanelists.find(x=>x.id===id);
     return p?p.name:'Unknown Panelist';
   }).join(' · ')||'Solo session';
 
-  // Zoom button
   const hasZoom=sess.zoom&&sess.zoom.url;
   const zoomBtn=hasZoom
     ?`<a href="${sess.zoom.url}" target="_blank" class="itin-zoom-btn">📹 Join Zoom</a>`
     :`<span class="itin-zoom-btn tbc">Zoom TBC</span>`;
 
-  // Zoom details
   const zoomDetails=hasZoom?`
     <div class="itin-zoom-details">
       <strong>Meeting ID:</strong> ${sess.zoom.meetingId||'—'}&nbsp;&nbsp;
       <strong>Passcode:</strong> ${sess.zoom.passcode||'—'}
     </div>`:'';
 
-  // Students
   let studentsHtml='';
   if(sess.students.length){
     studentsHtml=`<div class="itin-students-lbl">Students Booked (${sess.students.length} of ${sess.totalSlots})</div>`;
@@ -402,6 +398,50 @@ function buildSessionCard(sess, isPast){
   } else {
     studentsHtml=`<div class="itin-students-lbl">Students</div><div class="itin-no-students">No students booked yet for this session.</div>`;
   }
+
+  const panelLabel=sess.panelLabel||'Your Panel';
+
+  const resourcesHtml=`
+    <div class="itin-divider"></div>
+    <div style="padding:18px 20px;display:flex;flex-direction:column;gap:12px;">
+
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9699A6;margin-bottom:2px;">Resources for This Session</div>
+
+      <!-- Airtable -->
+      <div style="border:2px solid #1E88D4;border-radius:10px;padding:16px 18px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9699A6;margin-bottom:6px;">Airtable — Student Application Access</div>
+        <div style="font-size:13px;color:#4A4D58;margin-bottom:12px;">Navigate to the <strong style="color:#1E88D4;">${panelLabel}</strong> view to access student applications before the interview.</div>
+        <a href="https://airtable.com/appqrnLWIQMmauMgP/pagXtUlGSIURTkfsR"
+           target="_blank"
+           style="display:inline-block;background:#1E88D4;color:#fff;font-size:13px;font-weight:700;padding:9px 18px;border-radius:7px;text-decoration:none;margin-bottom:12px;">
+          📄 Open Airtable →
+        </a>
+        <div style="background:#F5F4F0;border-radius:8px;padding:10px 14px;">
+          <div style="font-size:11px;color:#9699A6;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Login Credentials</div>
+          <div style="font-size:13px;color:#4A4D58;margin-bottom:4px;">Username: <strong style="color:#0F1117;">admission@thesppg.org</strong></div>
+          <div style="font-size:13px;color:#4A4D58;">Password: <strong style="color:#0F1117;font-family:monospace;background:#E8E6E0;padding:2px 6px;border-radius:4px;">v9TpJEu?J-c-pL-</strong></div>
+        </div>
+      </div>
+
+      <!-- Scoring Sheet & Questions -->
+      <div style="border:2px solid #F5A623;border-radius:10px;padding:16px 18px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9699A6;margin-bottom:6px;">Scoring Sheet &amp; Interview Questions</div>
+        <div style="font-size:13px;color:#4A4D58;margin-bottom:12px;">Open the scoring sheet, go to the <strong style="color:#B45309;">${panelLabel}</strong> tab, and score each student. Interview questions are in the document below.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <a href="https://docs.google.com/spreadsheets/d/1hXl4-Jf5y4rJXtlj2mYzcr6Rgzg14Lwo/edit?gid=1914922500#gid=1914922500"
+             target="_blank"
+             style="display:inline-block;background:#F5A623;color:#fff;font-size:13px;font-weight:700;padding:9px 18px;border-radius:7px;text-decoration:none;">
+            📊 Open Scoring Sheet →
+          </a>
+          <a href="https://docs.google.com/document/d/18obrMsvF15wEe0CVGDAMoZs4vy-73F2AOcrMfhAHek0/edit?tab=t.0#heading=h.bvqjn4asx4nh"
+             target="_blank"
+             style="display:inline-block;background:#0F1117;color:#fff;font-size:13px;font-weight:700;padding:9px 18px;border-radius:7px;text-decoration:none;">
+            ❓ Interview Questions →
+          </a>
+        </div>
+      </div>
+
+    </div>`;
 
   return `
   <div class="itin-session" style="${isPast?'opacity:.72;':''}">
@@ -425,6 +465,7 @@ function buildSessionCard(sess, isPast){
     </div>
     <div class="itin-divider"></div>
     <div class="itin-students">${studentsHtml}</div>
+    ${resourcesHtml}
   </div>`;
 }
 
