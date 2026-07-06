@@ -6,12 +6,21 @@
 <title>SPPG · Panelist Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--teal:#1BA8A0;--red:#E63329;--blue:#1E88D4;--amber:#F5A623;--green:#1B6B45;--ink:#0F1117;--ink2:#4A4D58;--ink3:#9699A6;--paper:#FAF9F7;--white:#fff;--border:rgba(15,17,23,.10);--border2:rgba(15,17,23,.18);--gbg:#EBF5F0;--gborder:#B8DEC9;--rbg:#FEF2F2;--r:14px;--rs:8px;}
+:root{
+  --teal:#1BA8A0;--red:#E63329;--blue:#1E88D4;--amber:#F5A623;
+  --green:#1B6B45;--ink:#0F1117;--ink2:#4A4D58;--ink3:#9699A6;
+  --paper:#FAF9F7;--white:#fff;
+  --border:rgba(15,17,23,.10);--border2:rgba(15,17,23,.18);
+  --gbg:#EBF5F0;--gborder:#B8DEC9;--rbg:#FEF2F2;
+  --r:14px;--rs:8px;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
 .page{display:none;min-height:100vh;flex-direction:column;}
 .page.active{display:flex;}
-#pg-login{align-items:center;justify-content:center;padding:40px 20px;background:var(--paper);}
+
+/* Login */
+#pg-login{align-items:center;justify-content:center;padding:40px 20px;}
 .lc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:40px 32px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.06);}
 .logo-row{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
 .logo-box{width:40px;height:40px;background:linear-gradient(135deg,var(--teal),var(--blue));border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;}
@@ -24,23 +33,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .err{font-size:12px;color:var(--red);margin-top:8px;display:none;}
 .btn{height:44px;border-radius:var(--rs);border:none;font:600 14px 'DM Sans',sans-serif;cursor:pointer;transition:all .18s;}
 .btn-t{background:var(--teal);color:#fff;width:100%;margin-top:14px;}
-.btn-t:hover{background:#17908A;}
-.btn-t:disabled{opacity:.5;cursor:not-allowed;}
+.btn-t:hover{background:#17908A;} .btn-t:disabled{opacity:.5;cursor:not-allowed;}
 .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .support{font-size:11px;color:var(--ink3);margin-top:12px;text-align:center;}
 .support a{color:var(--teal);text-decoration:none;}
 
+/* Portal */
 #pg-portal{flex-direction:column;}
-.portal-hdr{background:linear-gradient(135deg,var(--ink) 0%,#1a2a3a 100%);color:#fff;padding:28px 24px 44px;position:relative;overflow:hidden;}
-.portal-hdr::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:var(--teal);opacity:.08;}
-.ph-top{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.portal-hdr{background:linear-gradient(135deg,var(--ink) 0%,#1a2a3a 100%);color:#fff;padding:24px 24px 0;position:relative;overflow:hidden;}
+.portal-hdr::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:var(--teal);opacity:.07;}
+.ph-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .ph-logo{width:32px;height:32px;background:linear-gradient(135deg,var(--teal),var(--blue));border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;color:#fff;}
 .ph-school{font-size:12px;opacity:.6;}
-.portal-hdr h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,30px);}
-.portal-hdr .who{font-size:13px;opacity:.65;margin-top:6px;}
-.portal-body{max-width:600px;margin:-20px auto 60px;padding:0 20px;}
+.ph-name{font-family:'Playfair Display',serif;font-size:clamp(20px,4vw,28px);margin-bottom:4px;}
+.ph-email{font-size:12px;opacity:.55;margin-bottom:18px;}
 
+/* Tabs */
+.portal-tabs{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.12);margin-top:4px;}
+.ptab{padding:14px 22px;font-size:13px;font-weight:600;color:rgba(255,255,255,.55);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:3px solid transparent;transition:all .18s;letter-spacing:.01em;}
+.ptab:hover{color:rgba(255,255,255,.85);}
+.ptab.active{color:#fff;border-bottom-color:var(--teal);}
+.ptab-badge{display:inline-block;background:var(--teal);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+
+.portal-body{max-width:640px;margin:0 auto;padding:24px 20px 60px;width:100%;}
+.tab-pane{display:none;} .tab-pane.active{display:block;}
+
+/* Availability tab */
 .prog-pill{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;display:flex;align-items:center;gap:16px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.05);}
 .prog-num{font-family:'Playfair Display',serif;font-size:28px;color:var(--teal);min-width:40px;}
 .prog-meta{flex:1;}
@@ -48,7 +67,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .prog-bar{height:100%;background:var(--teal);border-radius:3px;transition:width .3s;}
 .prog-lbl{font-size:12px;color:var(--ink3);}
 .prog-req{font-size:12px;color:var(--ink2);white-space:nowrap;}
-
 .month-sec{margin-bottom:24px;}
 .month-hd{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
 .blk-list{display:flex;flex-direction:column;gap:8px;}
@@ -66,27 +84,60 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .b-morning{background:#FEF3E2;color:#B45309;}
 .b-evening{background:#EEF2FF;color:#4F46E5;}
 .b-sat{background:var(--gbg);color:var(--green);}
-
 .submit-wrap{margin-top:24px;}
 .submit-note{font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6;}
 .submit-note span{color:var(--red);font-weight:600;}
 .btn-submit{width:100%;height:50px;border-radius:var(--rs);background:var(--teal);color:#fff;border:none;font:600 15px 'DM Sans',sans-serif;cursor:pointer;transition:opacity .18s;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn-submit:hover{opacity:.88;}
-.btn-submit:disabled{opacity:.5;cursor:not-allowed;}
+.btn-submit:hover{opacity:.88;} .btn-submit:disabled{opacity:.5;cursor:not-allowed;}
 .suc-card{background:var(--white);border:1px solid var(--gborder);border-radius:var(--r);padding:28px;text-align:center;margin-top:20px;display:none;}
 .suc-card .icon{font-size:36px;margin-bottom:12px;}
 .suc-card h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--teal);margin-bottom:8px;}
 .suc-card p{font-size:13px;color:var(--ink2);line-height:1.6;}
 .add-more{margin-top:14px;height:40px;padding:0 20px;border:1px solid var(--border2);border-radius:var(--rs);background:none;font:500 13px 'DM Sans',sans-serif;cursor:pointer;color:var(--ink2);transition:all .15s;}
 .add-more:hover{border-color:var(--teal);color:var(--teal);}
+
+/* Itinerary tab */
+.itin-empty{text-align:center;padding:48px 24px;color:var(--ink3);}
+.itin-empty .icon{font-size:40px;margin-bottom:12px;}
+.itin-empty p{font-size:14px;line-height:1.6;}
+.itin-session{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.04);}
+.itin-head{padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.itin-head-left{flex:1;}
+.itin-date{font-family:'Playfair Display',serif;font-size:18px;color:var(--ink);margin-bottom:2px;}
+.itin-shift{font-size:12px;color:var(--ink3);margin-bottom:8px;}
+.itin-meta-row{display:flex;gap:8px;flex-wrap:wrap;}
+.itin-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+.chip-panel{background:var(--gbg);color:var(--green);}
+.chip-zoom{background:#EFF6FF;color:var(--blue);}
+.chip-students{background:#FEF3E2;color:#B45309;}
+.chip-status-ready{background:var(--gbg);color:var(--green);}
+.chip-status-forming{background:#FEF3E2;color:#B45309;}
+.chip-status-completed{background:var(--paper);color:var(--ink3);}
+.itin-zoom-btn{display:inline-flex;align-items:center;gap:6px;background:var(--teal);color:#fff;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--rs);text-decoration:none;transition:opacity .18s;white-space:nowrap;flex-shrink:0;}
+.itin-zoom-btn:hover{opacity:.88;}
+.itin-zoom-btn.tbc{background:var(--ink3);cursor:default;}
+.itin-divider{height:1px;background:var(--border);margin:0 20px;}
+.itin-copanel{padding:14px 20px;background:var(--paper);}
+.itin-copanel-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;}
+.itin-copanel-names{font-size:13px;color:var(--ink2);}
+.itin-students{padding:0 20px 20px;}
+.itin-students-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:16px;margin-bottom:10px;}
+.itin-student-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--rs);margin-bottom:6px;background:var(--paper);border:1px solid var(--border);}
+.itin-time{font-size:13px;font-weight:700;color:var(--teal);min-width:64px;}
+.itin-sname{font-size:14px;font-weight:600;color:var(--ink);flex:1;}
+.itin-semail{font-size:12px;color:var(--ink3);}
+.itin-no-students{font-size:13px;color:var(--ink3);font-style:italic;padding:12px 0;}
+.itin-zoom-details{padding:14px 20px 0;font-size:12px;color:var(--ink3);line-height:1.8;}
+.itin-zoom-details strong{color:var(--ink2);}
+
+/* Toast */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:280px;}
-.toast.show{opacity:1;}
-.toast.ok{background:var(--teal);}
-.toast.bad{background:var(--red);}
+.toast.show{opacity:1;} .toast.ok{background:var(--teal);} .toast.bad{background:var(--red);}
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="pg-login" class="page active">
   <div class="lc">
     <div class="logo-row">
@@ -94,42 +145,58 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
       <div class="logo-text">School of Politics,<br>Policy & Governance</div>
     </div>
     <h2>Panelist Portal</h2>
-    <p>Enter your registered email to access your availability form for the admissions interview panel.</p>
+    <p>Enter your registered email to manage your availability and view your interview schedule.</p>
     <label class="lbl">Your Registered Email</label>
     <input class="inp" type="email" id="p-email" placeholder="you@institution.edu" onkeypress="if(event.key==='Enter')loginPanelist()" />
     <div class="err" id="p-err"></div>
-    <button class="btn btn-t" id="p-btn" onclick="loginPanelist()">Access My Availability Form</button>
+    <button class="btn btn-t" id="p-btn" onclick="loginPanelist()">Access Portal</button>
     <div class="support">Issues? <a href="mailto:technology@nigeria.thesppg.org">technology@nigeria.thesppg.org</a></div>
     <div style="text-align:center;margin-top:14px;"><a href="/" style="font-size:12px;color:var(--ink3);text-decoration:none;">← Student booking portal</a></div>
   </div>
 </div>
 
+<!-- PORTAL -->
 <div id="pg-portal" class="page">
   <div class="portal-hdr">
     <div class="ph-top"><div class="ph-logo">SPPG</div><span class="ph-school">Panelist Portal — SPPG Admissions</span></div>
-    <h1>Your Availability</h1>
-    <div class="who" id="p-who"></div>
+    <div class="ph-name" id="p-name">Welcome</div>
+    <div class="ph-email" id="p-email-display"></div>
+    <div class="portal-tabs">
+      <button class="ptab active" onclick="switchTab('availability',this)">📅 My Availability</button>
+      <button class="ptab" onclick="switchTab('itinerary',this)">🗓️ My Interviews <span class="ptab-badge" id="itin-count">0</span></button>
+    </div>
   </div>
+
   <div class="portal-body">
-    <div class="prog-pill">
-      <div class="prog-num" id="prog-num">0</div>
-      <div class="prog-meta">
-        <div class="prog-lbl">blocks selected</div>
-        <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+
+    <!-- AVAILABILITY TAB -->
+    <div class="tab-pane active" id="tab-availability">
+      <div class="prog-pill">
+        <div class="prog-num" id="prog-num">0</div>
+        <div class="prog-meta">
+          <div class="prog-lbl">blocks selected</div>
+          <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+        </div>
+        <div class="prog-req" id="prog-req">min 3 required</div>
       </div>
-      <div class="prog-req" id="prog-req">min 3 required</div>
+      <div id="blocks-container"></div>
+      <div class="submit-wrap" id="submit-wrap">
+        <div class="submit-note" id="submit-note"></div>
+        <button class="btn-submit" id="submit-btn" onclick="submitAvail()" disabled>Submit My Availability</button>
+      </div>
+      <div class="suc-card" id="suc-card">
+        <div class="icon">🎯</div>
+        <h3>Availability Submitted!</h3>
+        <p id="suc-msg">Your availability has been recorded.</p>
+        <button class="add-more" onclick="showAddMore()">+ Add More Availability</button>
+      </div>
     </div>
-    <div id="blocks-container"></div>
-    <div class="submit-wrap" id="submit-wrap">
-      <div class="submit-note" id="submit-note"></div>
-      <button class="btn-submit" id="submit-btn" onclick="submitAvail()" disabled>Submit My Availability</button>
+
+    <!-- ITINERARY TAB -->
+    <div class="tab-pane" id="tab-itinerary">
+      <div id="itin-container"></div>
     </div>
-    <div class="suc-card" id="suc-card">
-      <div class="icon">🎯</div>
-      <h3>Availability Submitted!</h3>
-      <p id="suc-msg">Your availability has been recorded. You'll receive an email notification when you're matched into a panel.</p>
-      <button class="add-more" onclick="showAddMore()">+ Add More Availability</button>
-    </div>
+
   </div>
 </div>
 
@@ -138,8 +205,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 <script>
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 let currentPanelist=null, selBlocks=new Set(), allBlocks=[], submittedBlockIds=[], minBlocks=3;
+let allPanelists=[];
 
 function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function switchTab(name, el){
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='itinerary') renderItinerary();
+}
 
 async function loginPanelist(){
   const email=document.getElementById('p-email').value.trim().toLowerCase();
@@ -150,32 +226,41 @@ async function loginPanelist(){
   btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
   try{
     const p=await API.db('lookupPanelist',{email});
-    if(!p){err.textContent='Email not registered as a panelist. Contact technology@nigeria.thesppg.org';err.style.display='block';btn.disabled=false;btn.textContent='Access My Availability Form';return;}
+    if(!p){err.textContent='Email not registered as a panelist. Contact technology@nigeria.thesppg.org';err.style.display='block';btn.disabled=false;btn.textContent='Access Portal';return;}
     currentPanelist=p;
     const cfg=await API.db('getConfig');
     minBlocks=cfg.min_blocks_required||3;
-    allBlocks=await API.db('getTimeBlocks');
+    // Load only visible (non-hidden, non-past) blocks for panelist
+    allBlocks=await API.db('getVisibleTimeBlocks');
+    allPanelists=await API.db('getPanelists');
     const myAvail=await API.db('getPanelistAvailability',{panelistId:p.id});
     submittedBlockIds=myAvail.map(a=>a.time_block_id);
-    document.getElementById('p-who').textContent=`Welcome, ${p.name}`;
-    renderPortal();
+    document.getElementById('p-name').textContent=`Welcome, ${p.name}`;
+    document.getElementById('p-email-display').textContent=p.email;
     go('pg-portal');
+    renderAvailability();
+    loadItineraryCount();
   }catch(e){err.textContent='Something went wrong. Try again.';err.style.display='block';}
-  btn.disabled=false;btn.textContent='Access My Availability Form';
+  btn.disabled=false;btn.textContent='Access Portal';
 }
 
-function renderPortal(){
+// ── AVAILABILITY ───────────────────────────────────────────
+function renderAvailability(){
   const byMonth={};
   for(const blk of allBlocks){
     const d=new Date(blk.date+'T00:00:00');
-    const key=`${d.getFullYear()}-${d.getMonth()}`;
+    const key=`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`;
     const label=`${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
     if(!byMonth[key])byMonth[key]={label,blocks:[]};
     byMonth[key].blocks.push(blk);
   }
   const container=document.getElementById('blocks-container');
   container.innerHTML='';
-  if(!allBlocks.length){container.innerHTML='<p style="font-size:13px;color:var(--ink3);padding:20px 0;text-align:center;">No time blocks available yet. Check back soon.</p>';document.getElementById('submit-wrap').style.display='none';return;}
+  if(!allBlocks.length){
+    container.innerHTML='<div style="text-align:center;padding:40px 24px;color:var(--ink3);"><div style="font-size:36px;margin-bottom:12px;">📅</div><p style="font-size:14px;line-height:1.6;">No upcoming time blocks available yet.<br>Check back soon or contact the admissions team.</p></div>';
+    document.getElementById('submit-wrap').style.display='none';
+    return;
+  }
   for(const[key,{label,blocks}]of Object.entries(byMonth)){
     const sec=document.createElement('div');sec.className='month-sec';
     sec.innerHTML=`<div class="month-hd">${label}</div><div class="blk-list" id="bl-${key}"></div>`;
@@ -185,8 +270,7 @@ function renderPortal(){
       const done=submittedBlockIds.includes(blk.id);
       const sel=selBlocks.has(blk.id);
       const item=document.createElement('div');
-      item.className='blk'+(done?' done':sel?' sel':'');
-      item.id='bi-'+blk.id;
+      item.className='blk'+(done?' done':sel?' sel':'');item.id='bi-'+blk.id;
       const bc=blk.shift==='morning'?'b-morning':blk.shift==='evening'?'b-evening':'b-sat';
       const d=new Date(blk.date+'T00:00:00');
       const dl=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -204,19 +288,16 @@ function toggleBlk(id){
   else{selBlocks.add(id);const el=document.getElementById('bi-'+id);el.classList.add('sel');el.querySelector('.blk-chk').textContent='✓';}
   updateProg();
 }
-
 function updateProg(){
   const c=selBlocks.size;
-  const pct=Math.min(100,(c/minBlocks)*100);
   document.getElementById('prog-num').textContent=c;
-  document.getElementById('prog-bar').style.width=pct+'%';
+  document.getElementById('prog-bar').style.width=Math.min(100,(c/minBlocks)*100)+'%';
   document.getElementById('prog-req').textContent=`min ${minBlocks} required`;
   const note=document.getElementById('submit-note');
   const btn=document.getElementById('submit-btn');
-  if(c<minBlocks){note.innerHTML=`Please select at least <span>${minBlocks} time blocks</span> to ensure enough overlap for panel formation. You've selected ${c}.`;btn.disabled=true;}
+  if(c<minBlocks){note.innerHTML=`Please select at least <span>${minBlocks} time blocks</span> to ensure panel overlap. You've selected ${c}.`;btn.disabled=true;}
   else{note.innerHTML=`You've selected ${c} time block${c!==1?'s':''}. Ready to submit!`;btn.disabled=false;}
 }
-
 async function submitAvail(){
   const btn=document.getElementById('submit-btn');
   if(selBlocks.size<minBlocks)return;
@@ -229,12 +310,123 @@ async function submitAvail(){
     document.getElementById('suc-card').style.display='block';
     document.getElementById('submit-wrap').style.display='none';
     toast(`${result.added} block${result.added!==1?'s':''} submitted!`,'ok');
-    renderPortal();
+    renderAvailability();
+    loadItineraryCount();
   }catch(e){toast('Submission failed. Try again.','bad');}
   btn.disabled=false;btn.textContent='Submit My Availability';
 }
+function showAddMore(){document.getElementById('suc-card').style.display='none';document.getElementById('submit-wrap').style.display='block';renderAvailability();}
 
-function showAddMore(){document.getElementById('suc-card').style.display='none';document.getElementById('submit-wrap').style.display='block';renderPortal();}
+// ── ITINERARY ──────────────────────────────────────────────
+async function loadItineraryCount(){
+  try{
+    const data=await API.db('getPanelistItinerary',{panelistId:currentPanelist.id});
+    const upcomingCount=data.filter(d=>d.status!=='completed').length;
+    document.getElementById('itin-count').textContent=upcomingCount||data.length;
+  }catch(e){}
+}
+
+async function renderItinerary(){
+  const container=document.getElementById('itin-container');
+  container.innerHTML=`<div style="text-align:center;padding:32px;color:var(--ink3);"><span class="spin" style="border-top-color:var(--teal);border-color:rgba(27,168,160,.3);"></span></div>`;
+  try{
+    const data=await API.db('getPanelistItinerary',{panelistId:currentPanelist.id});
+    if(!data.length){
+      container.innerHTML=`<div class="itin-empty"><div class="icon">🗓️</div><p>No interview sessions assigned yet.<br>Submit your availability — you'll appear here once matched into a panel and students begin booking.</p></div>`;
+      return;
+    }
+
+    // Separate upcoming vs past
+    const today=new Date(new Date().toDateString());
+    const upcoming=data.filter(d=>new Date(d.date+'T00:00:00')>=today&&d.status!=='completed');
+    const past=data.filter(d=>new Date(d.date+'T00:00:00')<today||d.status==='completed');
+
+    let html='';
+
+    if(upcoming.length){
+      html+=`<div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px;margin-top:4px;">Upcoming Sessions (${upcoming.length})</div>`;
+      html+=upcoming.map(sess=>buildSessionCard(sess,false)).join('');
+    }
+
+    if(past.length){
+      html+=`<div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px;margin-top:${upcoming.length?'28px':'4px'};">Past Sessions (${past.length})</div>`;
+      html+=past.map(sess=>buildSessionCard(sess,true)).join('');
+    }
+
+    container.innerHTML=html;
+
+    // Update badge
+    document.getElementById('itin-count').textContent=upcoming.length||data.length;
+  }catch(e){
+    container.innerHTML=`<div class="itin-empty"><div class="icon">⚠️</div><p>Could not load your schedule. Please refresh or contact technology@nigeria.thesppg.org</p></div>`;
+  }
+}
+
+function buildSessionCard(sess, isPast){
+  const d=new Date(sess.date+'T00:00:00');
+  const dateLabel=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const statusChip=`chip-status-${sess.status}`;
+  const statusLabel=sess.status==='ready'?'Panel Ready':sess.status==='forming'?'Panel Forming':sess.status==='active'?'In Progress':'Completed';
+
+  // Co-panelist names
+  const coNames=sess.coPanelistIds.map(id=>{
+    const p=allPanelists.find(x=>x.id===id);
+    return p?p.name:'Unknown Panelist';
+  }).join(' · ')||'Solo session';
+
+  // Zoom button
+  const hasZoom=sess.zoom&&sess.zoom.url;
+  const zoomBtn=hasZoom
+    ?`<a href="${sess.zoom.url}" target="_blank" class="itin-zoom-btn">📹 Join Zoom</a>`
+    :`<span class="itin-zoom-btn tbc">Zoom TBC</span>`;
+
+  // Zoom details
+  const zoomDetails=hasZoom?`
+    <div class="itin-zoom-details">
+      <strong>Meeting ID:</strong> ${sess.zoom.meetingId||'—'}&nbsp;&nbsp;
+      <strong>Passcode:</strong> ${sess.zoom.passcode||'—'}
+    </div>`:'';
+
+  // Students
+  let studentsHtml='';
+  if(sess.students.length){
+    studentsHtml=`<div class="itin-students-lbl">Students Booked (${sess.students.length} of ${sess.totalSlots})</div>`;
+    studentsHtml+=sess.students.map(s=>`
+      <div class="itin-student-row">
+        <div class="itin-time">${API.formatTime(s.slotTime)}</div>
+        <div style="flex:1;">
+          <div class="itin-sname">${s.name}</div>
+          <div class="itin-semail">${s.email}</div>
+        </div>
+      </div>`).join('');
+  } else {
+    studentsHtml=`<div class="itin-students-lbl">Students</div><div class="itin-no-students">No students booked yet for this session.</div>`;
+  }
+
+  return `
+  <div class="itin-session" style="${isPast?'opacity:.72;':''}">
+    <div class="itin-head">
+      <div class="itin-head-left">
+        <div class="itin-date">${dateLabel}</div>
+        <div class="itin-shift">${sess.shiftLabel} · ${sess.startTime} – ${sess.endTime}</div>
+        <div class="itin-meta-row">
+          ${sess.panelLabel?`<span class="itin-chip chip-panel">📋 ${sess.panelLabel}</span>`:''}
+          <span class="itin-chip chip-students">👤 ${sess.bookedSlots}/${sess.totalSlots} students</span>
+          <span class="itin-chip ${statusChip}">${statusLabel}</span>
+        </div>
+      </div>
+      ${zoomBtn}
+    </div>
+    ${zoomDetails?`<div class="itin-divider"></div>${zoomDetails}`:''}
+    <div class="itin-divider"></div>
+    <div class="itin-copanel">
+      <div class="itin-copanel-lbl">Co-Panelists</div>
+      <div class="itin-copanel-names">${coNames}</div>
+    </div>
+    <div class="itin-divider"></div>
+    <div class="itin-students">${studentsHtml}</div>
+  </div>`;
+}
 
 let _tt;
 function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+(type||'');clearTimeout(_tt);_tt=setTimeout(()=>el.className='toast',3200);}

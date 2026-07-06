@@ -79,18 +79,95 @@ export default async function handler(req, res) {
         const d = await query(`${sb('time_blocks')}?order=date,start_time`);
         return res.json(d);
       }
+      case 'getVisibleTimeBlocks': {
+        // For panelist portal: exclude hidden blocks and blocks whose date has passed
+        const today = new Date().toISOString().slice(0, 10);
+        const d = await query(
+          `${sb('time_blocks')}?hidden_from_panelists=eq.false&date=gte.${today}&order=date,start_time`
+        );
+        return res.json(d);
+      }
       case 'addTimeBlock': {
         const d = await query(sb('time_blocks'), { method: 'POST', body: JSON.stringify(payload) });
         await logActivity('admin', `Time block added: ${payload.shift_label} on ${payload.date}`, {});
         return res.json(d[0]);
       }
+      case 'toggleHideBlock': {
+        // Admin can hide/show a block from panelist view
+        const blk = (await query(`${sb('time_blocks')}?id=eq.${payload.id}`))[0];
+        if (!blk) throw new Error('Block not found');
+        const newHidden = !blk.hidden_from_panelists;
+        const d = await query(`${sb('time_blocks')}?id=eq.${payload.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ hidden_from_panelists: newHidden }),
+        });
+        await logActivity('admin', `Time block ${newHidden ? 'hidden from' : 'shown to'} panelists: ${blk.label}`, {});
+        return res.json(d[0]);
+      }
       case 'deleteTimeBlock': {
-        // Check no bookings exist
         const bks = await query(`${sb('bookings')}?instance_id=in.(${await getInstanceIdsForBlock(payload.id)})`);
         if (bks.length > 0) throw new Error('Cannot delete — has bookings');
         await query(`${sb('time_blocks')}?id=eq.${payload.id}`, { method: 'DELETE' });
         await rebuildInstances();
         return res.json({ ok: true });
+      }
+
+      // ── PANELIST ITINERARY ─────────────────────────────────
+      case 'getPanelistItinerary': {
+        // Returns all bookings for sessions this panelist is assigned to
+        const { panelistId } = payload;
+        const allInsts = await query(
+          `${sb('panel_instances')}?order=created_at`
+        );
+        // Filter instances this panelist is in
+        const myInsts = allInsts.filter(i => i.panelist_ids.includes(panelistId));
+        if (!myInsts.length) return res.json([]);
+
+        const instIds = myInsts.map(i => i.id);
+        const blocks = await query(`${sb('time_blocks')}?order=date,start_time`);
+        const blockMap = Object.fromEntries(blocks.map(b => [b.id, b]));
+
+        // Get all bookings for these instances
+        const bookings = await query(
+          `${sb('bookings')}?instance_id=in.(${instIds.join(',')})&order=date,slot_time`
+        );
+
+        // Get config for zoom links
+        const cfg = (await query(`${sb('config')}?id=eq.1`))[0];
+        const zoomLinks = cfg.zoom_links || [];
+
+        // Build itinerary: group by date+block, attach student info
+        const itinerary = myInsts.map(inst => {
+          const blk = blockMap[inst.time_block_id];
+          if (!blk) return null;
+          const instBookings = bookings.filter(b => b.instance_id === inst.id);
+          const zoom = zoomLinks[inst.zoom_index] || zoomLinks[0] || {};
+          // co-panelist IDs (exclude self) — names fetched client side from panelist list
+          const coPanelistIds = inst.panelist_ids.filter(pid => pid !== panelistId);
+          return {
+            instanceId: inst.id,
+            status: inst.status,
+            panelLabel: inst.airtable_panel_label || '',
+            date: blk.date,
+            shiftLabel: blk.shift_label,
+            startTime: blk.start_time,
+            endTime: blk.end_time,
+            zoom,
+            coPanelistIds,
+            students: instBookings.map(b => ({
+              name: b.student_name,
+              email: b.student_email,
+              slotTime: b.slot_time,
+              panelLabel: b.panel_label,
+            })),
+            totalSlots: inst.student_slots ? inst.student_slots.length : 0,
+            bookedSlots: instBookings.length,
+          };
+        }).filter(Boolean);
+
+        // Sort by date then startTime
+        itinerary.sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime));
+        return res.json(itinerary);
       }
 
       // ── AVAILABILITY ───────────────────────────────────────
@@ -464,7 +541,9 @@ export default async function handler(req, res) {
     const [startH, startM] = block.start_time.split(':').map(Number);
     const [endH, endM] = block.end_time.split(':').map(Number);
     const totalMins = (endH * 60 + endM) - (startH * 60 + startM);
-    const slotSize = cfg.interview_duration_mins + cfg.buffer_mins;
+    // buffer_mins default 10 (updated from 5 after pilot feedback)
+    const bufferMins = cfg.buffer_mins ?? 10;
+    const slotSize = cfg.interview_duration_mins + bufferMins;
     let cursor = startH * 60 + startM;
     let slotIdx = 0, studentCount = 0;
     while (cursor + cfg.interview_duration_mins <= startH * 60 + startM + totalMins) {
