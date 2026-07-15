@@ -394,6 +394,7 @@ function buildSessionCard(sess, isPast){
           <div class="itin-sname">${s.name}</div>
           <div class="itin-semail">${s.email}</div>
         </div>
+        <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:#EBF5F0;color:#1B6B45;white-space:nowrap;">${s.panelLabel}</span>
       </div>`).join('');
   } else {
     studentsHtml=`<div class="itin-students-lbl">Students</div><div class="itin-no-students">No students booked yet for this session.</div>`;
