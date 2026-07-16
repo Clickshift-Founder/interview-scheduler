@@ -762,14 +762,14 @@ function updateEmRec(){
 function updateEmPreview(){
   const type=document.getElementById('em-type').value,val=document.getElementById('em-rec').value;
   const prev=document.getElementById('em-preview');
-  if(type==='student'){const s=allStudents.find(x=>x.email===val);const bk=allBookings.find(b=>b.student_email===val);prev.innerHTML=s?`<strong>To:</strong> ${s.name} &lt;${s.email}&gt;<br><strong>Booking:</strong> ${bk?`${API.fmtDate(bk.date)} ${API.formatTime(bk.slot_time)} · ${bk.panel_label}`:'No booking yet'}`:'No student selected.';}
+  if(type==='student'){const s=allStudents.find(x=>x.email===val);const bk=[...allBookings].filter(b=>b.student_email===val).sort((a,b)=>new Date(b.booked_at)-new Date(a.booked_at))[0];prev.innerHTML=s?`<strong>To:</strong> ${s.name} &lt;${s.email}&gt;<br><strong>Booking:</strong> ${bk?`${API.fmtDate(bk.date)} ${API.formatTime(bk.slot_time)} · ${bk.panel_label}`:'No booking yet'}`:'No student selected.';}
   else{const inst=allInsts.find(i=>i.id===val);const blk=inst?allBlocks.find(b=>b.id===inst.time_block_id):null;const pls=inst?inst.panelist_ids.map(pid=>allPanelists.find(p=>p.id===pid)).filter(Boolean):[];prev.innerHTML=inst?`<strong>To:</strong> ${pls.map(p=>p.name).join(', ')}<br><strong>Block:</strong> ${blk?.shift_label} ${blk?API.fmtDate(blk.date):''}`:'';}
 }
 async function sendManualEmail(){
   const type=document.getElementById('em-type').value,val=document.getElementById('em-rec').value,tplType=document.getElementById('em-tpl').value;
   const zoom=(cfg.zoom_links||[]).find(z=>z.url)||{};
   if(type==='student'){
-    const s=allStudents.find(x=>x.email===val);const bk=allBookings.find(b=>b.student_email===val);
+    const s=allStudents.find(x=>x.email===val);const bk=[...allBookings].filter(b=>b.student_email===val).sort((a,b)=>new Date(b.booked_at)-new Date(a.booked_at))[0];
     if(!s){toast('Student not found.','bad');return;}
     const tpl=cfg.emailjs_student_tpl;if(!tpl){toast('Student template ID not set in Settings.','bad');return;}
     await API.email(tpl,{to_email:s.email,to_name:s.name,interview_date:bk?API.fmtDateLong(bk.date):'TBC',interview_time:bk?API.formatTime(bk.slot_time):'TBC',panel_label:bk?.panel_label||'TBC',zoom_url:zoom.url||'TBC',zoom_meeting_id:zoom.meetingId||'',zoom_passcode:zoom.passcode||''});
